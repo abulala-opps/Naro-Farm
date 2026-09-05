@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>我的数字农场</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* 这里的样式对应你的作业 */
+        #character {
+            position: fixed;   /* 固定定位，相对于浏览器窗口 */
+            bottom: 20px;      /* 距离底部 20px */
+            right: 20px;       /* 距离右侧 20px */
+            width: 150px;      /* 设置合适的宽度，保持比例 */
+            z-index: 999;      /* 确保它浮在页面其他内容上面 */
+            pointer-events: auto; /* 允许点击，如果需要它挡住页面，可以不加 */
+        }
+        
+        /* 防止遮挡重要内容，可选：可以给 body 加个 padding-right */
+    </style>
+</head>
+
+<body>
+    <!--头部-->
+    <div style="background: rgb(40, 141, 89); padding: 20px;">
+
+        <nav>
+            <a href="index.html">首页</a>
+            <a href="about.html">关于</a>
+            <a href="projects.html">项目</a>
+            <a href="blog.html">日志</a>
+            <a href="friends.html">友链</a>
+        </nav>
+
+        <h1>🚜 欢迎来到我的数字农场</h1>
+        <h2>丰收会光顾这里</h2>
+
+        <p>这里正在建设中...</p>    
+
+
+    </div>
+
+
+    <!--内容-->
+
+    <a href="https://minedensity.top">梦的开始</a>
+    <img src="cat.jpg" alt="小猫守护者" style="width: 150px; height: 120px;">
+
+    <p>我无比期待着<span style="color: rgb(237, 207, 55);">丰收</span></p>
+
+
+    <!--鼠标-->
+    <p id="coords">鼠标位置：</p>
+    <div id="mouse" style="width:50px;height:50px;background:red;position:absolute;"></div>
+
+    <!--文字内容-->
+    <ul>
+        <li>第一项</li>
+        <li>第二项</li>
+        <li>第三项</li>
+    </ul>
+    <ol>
+        <li>第一步</li>
+        <li>第二步</li>
+    </ol>
+   <div class="card" style="background: rgb(13, 112, 58);">
+    这是一个卡片样式的内容块，带有圆角和边框。
+    </div>
+
+    <!--角色跟随图像-->
+    <img id="character" src="girl_sit.png" alt="小女孩">
+
+    <!--canvas-->
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+
+    <!--点击-->
+    <button id="myBtn">点我</button>
+    <button id="colorBtn">变色龙</button>
+    
+
+    <!-- 底部 -->
+    <div style="background: rgb(40,141,89); padding: 20px;">
+    <p>© 2026 我的数字农场 · 正在生长中 🌱</p>
+    </div>
+
+
+    <!-- 所有 JavaScript 放在 body 末尾 -->
+    <script>
+        console.log("你好，农场！");
+
+        let name = "佩洛斯莉";
+        let cname = "佩佩";
+        const age = 18;
+        let hobbies = ["种植", "旅行", "编程"];
+        let person = {
+            name: "佩洛斯莉",
+            age: 18,
+            hobbies: ["种植", "旅行", "编程"]
+        };
+        console.log("我的名字是" + name + ",今年" + age + "岁，" + "你也可以叫我" + cname + "。");
+
+        function SayHello(geust) {
+            return "你好啊，远道而来的" + geust + "，欢迎来到我的数字农场！";
+        }
+        console.log(SayHello("旅者"));
+
+        document.getElementById('myBtn').addEventListener('click', function() {
+        alert('🐔 你点了一下！');
+        });
+
+
+        // 定义 title
+        const title = document.querySelector('h1');
+
+        // 修改文字
+        title.innerHTML = '🚜 我的数字农场';
+
+
+        // 修改样式
+        title.style.color = '#2E7D32';
+
+        // 添加/移除类
+        title.classList.add('highlight');
+        title.classList.remove('highlight');
+        
+        document.getElementById('colorBtn').addEventListener('click', function() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            title.style.color = `rgb(${r}, ${g}, ${b})`;
+        });          
+
+
+        //获取鼠标位置
+        document.addEventListener('mousemove', function(e) {
+            document.getElementById('coords').innerHTML = 
+            '鼠标位置：X=' + e.clientX + ', Y=' + e.clientY;
+        });
+        
+        //鼠标样式
+        const mouse = document.getElementById('mouse');
+        document.addEventListener('mousemove', function(e) {
+            mouse.style.left = e.clientX + 'px';
+            mouse.style.top = e.clientY + 'px';
+        });
+
+        // ========== Day 3: 用 JS 加载图片 ==========
+        const img = new Image();
+        img.src = 'https://picsum.photos/100/100';
+        img.onload = function() {
+            document.body.appendChild(img);
+        };
+
+       // 点击生成图片（Day 4 正确实现）
+        document.addEventListener('click', function(e) {
+            // 创建 img 元素，而不是 div
+            const img = document.createElement('img');
+            // 使用随机图片，每次点击显示不同图片
+            img.src = 'https://picsum.photos/80/80?random=' + Date.now();
+            // 设置样式：固定在点击位置
+            img.style.cssText = `
+                position: fixed;
+                left: ${e.clientX - 40}px;   /* 让图片中心对准鼠标 */
+                top: ${e.clientY - 40}px;
+                width: 80px;
+                height: 80px;
+                border-radius: 10px;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                pointer-events: none;        /* 点击穿透，不影响后续点击 */
+                z-index: 1000;
+            `;
+            document.body.appendChild(img);
+        });
+
+        //canvas绘图
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 画一个蓝色矩形
+        ctx.fillStyle = '#4CAF50';
+        ctx.fillRect(100, 100, 200, 150);
+        
+        // 画一个圆
+        ctx.beginPath();
+        ctx.arc(400, 300, 50, 0, Math.PI * 2);
+        ctx.fillStyle = '#FF6F00';
+        ctx.fill();
+
+        // 天空渐变
+        const sky = ctx.createLinearGradient(0, 0, 0, 400);
+        sky.addColorStop(0, '#87CEEB');
+        sky.addColorStop(1, '#E8F5E9');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, 800, 400);
+
+        // 草地
+        ctx.fillStyle = '#7CB342';
+        ctx.fillRect(0, 400, 800, 200);
+
+        // 画围栏木桩
+        for (let i = 0; i < 10; i++) {
+            const x = 50 + i * 80;
+            ctx.fillStyle = '#8D6E63';
+            ctx.fillRect(x, 400, 15, 60);  // 木桩
+        }
+
+        // 画横梁
+        ctx.fillStyle = '#6D4C41';
+        ctx.fillRect(40, 415, 730, 10);
+        ctx.fillRect(40, 445, 730, 10);
+
+        function drawBackground() {
+        const canvas = document.getElementById('farm');
+        const ctx = canvas.getContext('2d');
+        const W = 800, H = 600;
+        
+        // 1. 天空渐变
+        const sky = ctx.createLinearGradient(0, 0, 0, H * 0.7);
+        sky.addColorStop(0, '#64B5F6');
+        sky.addColorStop(1, '#B3E5FC');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, W, H * 0.7);
+        
+        // 2. 草地
+        const grass = ctx.createLinearGradient(0, H * 0.65, 0, H);
+        grass.addColorStop(0, '#8BC34A');
+        grass.addColorStop(1, '#558B2F');
+        ctx.fillStyle = grass;
+        ctx.fillRect(0, H * 0.65, W, H * 0.35);
+        
+        // 3. 围栏（木桩+横梁）
+        ctx.fillStyle = '#795548';
+        for (let i = 0; i < 12; i++) {
+            ctx.fillRect(40 + i * 68, H * 0.63, 12, 50);
+        }
+        ctx.fillStyle = '#5D4037';
+        ctx.fillRect(35, H * 0.65, 740, 8);
+        ctx.fillRect(35, H * 0.68, 740, 8);
+        }
+        
+        function drawHouse() {
+        // 房体
+        ctx.fillStyle = '#EFEBE9';
+        ctx.fillRect(600, 380, 120, 100);
+        
+        // 屋顶（三角形）
+        ctx.fillStyle = '#BF360C';
+        ctx.beginPath();
+        ctx.moveTo(580, 380);
+        ctx.lineTo(660, 330);
+        ctx.lineTo(740, 380);
+        ctx.closePath();
+        ctx.fill();
+        
+        // 门
+        ctx.fillStyle = '#4E342E';
+        ctx.fillRect(645, 440, 30, 40);
+        
+        // 窗户
+        ctx.fillStyle = '#81D4FA';
+        ctx.fillRect(615, 405, 25, 25);
+        ctx.fillRect(680, 405, 25, 25);
+        }
+
+
+        function drawTree(x, y) {
+        // 树干
+        ctx.fillStyle = '#6D4C41';
+        ctx.fillRect(x, y, 15, 50);
+        
+        // 树冠（三个圆叠起来）
+        ctx.fillStyle = '#388E3C';
+        ctx.beginPath();
+        ctx.arc(x + 7, y - 10, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x - 10, y + 5, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x + 24, y + 5, 22, 0, Math.PI * 2);
+        ctx.fill();
+        }
+
+        function drawCloud(x, y) {
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            ctx.beginPath();
+            ctx.arc(x, y, 40, 0, Math.PI * 2);
+            ctx.arc(x - 35, y + 10, 30, 0, Math.PI * 2);
+            ctx.arc(x + 35, y + 10, 30, 0, Math.PI * 2);
+            ctx.arc(x - 15, y - 15, 25, 0, Math.PI * 2);
+            ctx.arc(x + 15, y - 15, 25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawBackground() {
+        // ... 天空、草地、围栏
+        drawHouse();
+        drawTree(150, 390);
+        drawTree(250, 380);
+        drawCloud(200, 80);
+        drawCloud(500, 50);
+     }
+
+     let sunProgress = 0;  // 0=清晨，1=黄昏
+
+     function drawSun() {
+        const x = 700;
+        const y = 60 + sunProgress * 250;
+        
+        // 发光光晕
+        const gradient = ctx.createRadialGradient(x, y, 10, x, y, 80);
+        gradient.addColorStop(0, 'rgba(255,235,59,0.6)');
+        gradient.addColorStop(1, 'rgba(255,235,59,0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, 80, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 太阳本身
+        ctx.fillStyle = '#FFD54F';
+        ctx.beginPath();
+        ctx.arc(x, y, 40, 0, Math.PI * 2);
+        ctx.fill();
+     }
+
+
+        function drawScene() {
+        ctx.clearRect(0, 0, 800, 600);
+        drawBackground();
+        drawSun();
+        drawAnimals();  // 这个我们下周加
+        requestAnimationFrame(drawScene);
+     }
+
+     // 用Canvas画一个简易小鸡作为占位
+        function createDummyAnimal() {
+            const c = document.createElement('canvas');
+            c.width = 50; c.height = 40;
+            const cx = c.getContext('2d');
+            // 身体（黄色圆）
+            cx.fillStyle = '#FFD600';
+            cx.beginPath();
+            cx.arc(25, 25, 18, 0, Math.PI * 2);
+            cx.fill();
+            // 头
+            cx.beginPath();
+            cx.arc(38, 15, 12, 0, Math.PI * 2);
+            cx.fill();
+            // 眼睛
+            cx.fillStyle = '#000';
+            cx.beginPath();
+            cx.arc(42, 12, 3, 0, Math.PI * 2);
+            cx.fill();
+            // 嘴巴
+            cx.fillStyle = '#FF6F00';
+            cx.beginPath();
+            cx.moveTo(48, 18);
+            cx.lineTo(55, 16);
+            cx.lineTo(48, 14);
+            cx.closePath();
+            cx.fill();
+            return c;
+        }
+
+        const animals = [];
+        const animalImages = [];  // 存放图片对象
+
+        function initAnimals() {
+            // 用AI生成或Canvas绘制的图片
+            animalImages.push(createDummyAnimal());
+            // 后续可以替换为真实图片
+        }
+
+        // 点击生成动物
+        canvas.addEventListener('click', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 只允许在围栏区域内生成
+            if (x > 50 && x < 750 && y > 400 && y < 580) {
+                animals.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    img: animalImages[Math.floor(Math.random() * animalImages.length)],
+                    scale: 0.8 + Math.random() * 0.4
+                });
+            }
+        });
+
+
+        function drawAnimals() {
+            for (let a of animals) {
+                const w = 40 * a.scale;
+                const h = 32 * a.scale;
+                ctx.drawImage(a.img, a.x - w/2, a.y - h/2, w, h);
+            }
+        }
+
+
+        function updateAnimals() {
+            for (let a of animals) {
+                a.x += a.vx;
+                a.y += a.vy;
+                
+                // 围栏边界反弹
+                if (a.x < 55 || a.x > 745) a.vx *= -1;
+                if (a.y < 410 || a.y > 575) a.vy *= -1;
+            }
+        }
+
+        // 在动画循环中调用
+        function drawScene() {
+            ctx.clearRect(0, 0, 800, 600);
+            drawBackground();
+            drawSun();
+            updateAnimals();
+            drawAnimals();
+            requestAnimationFrame(drawScene);
+        }
+
+        function drawAnimals() {
+            for (let a of animals) {
+                ctx.save();
+                // 根据速度方向翻转
+                if (a.vx < 0) {
+                    ctx.translate(a.x, a.y);
+                    ctx.scale(-1, 1);
+                    ctx.translate(-a.x, -a.y);
+                }
+                const w = 40 * a.scale;
+                const h = 32 * a.scale;
+                ctx.drawImage(a.img, a.x - w/2, a.y - h/2, w, h);
+                ctx.restore();
+            }
+        }
+
+
+        function updateSun() {
+            // 0只=清晨(0)，20只=黄昏(1)
+            sunProgress = Math.min(animals.length / 20, 1);
+        }
+
+        // 在drawScene中调用
+        function drawScene() {
+            updateSun();
+            // ...
+        }
+
+    </script>
+
+
+</body>
+</html>

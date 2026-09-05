@@ -1,0 +1,71 @@
+/* ====全局====*/
+
+
+h1 {
+    color: #2E7D32; /* 深绿色 */
+    font-size: 32px;
+}
+
+body {
+    background: #F5F5DC; /* 米白色 */
+    font-family: "Microsoft YaHei", sans-serif;
+}
+
+.card {
+    margin: 20px;          /* 卡片外间距 */
+    padding: 15px;         /* 卡片内间距 */
+    border: 2px solid #fbfcfb;  /* 边框 */
+    border-radius: 12px;   /* 圆角 */
+}
+
+
+
+/* ====导航栏====*/
+nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: #a0e0a0;
+    padding: 12px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;  /* 去掉下划线 */
+}
+
+/* ====固定角色 ====*/
+#character {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+}
+
+.card {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);  /* 悬停时放大 */
+}
+
+
+/*====头部====*/
+.header {
+    background: rgb(40,141,89);
+    padding: 20px;
+}
+
+
+
+
+/*====底部====*/
+.footer {
+    background: rgb(40,141,89);
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+
