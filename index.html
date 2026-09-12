@@ -1,458 +1,284 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>我的数字农场</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的数字农场</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <style>
-        /* 这里的样式对应你的作业 */
-        #character {
-            position: fixed;   /* 固定定位，相对于浏览器窗口 */
-            bottom: 20px;      /* 距离底部 20px */
-            right: 20px;       /* 距离右侧 20px */
-            width: 150px;      /* 设置合适的宽度，保持比例 */
-            z-index: 999;      /* 确保它浮在页面其他内容上面 */
-            pointer-events: auto; /* 允许点击，如果需要它挡住页面，可以不加 */
-        }
-        
-        /* 防止遮挡重要内容，可选：可以给 body 加个 padding-right */
-    </style>
+    body {
+        overflow: hidden;              /* 不出现滚动条 */
+        background: #d9ead3;
+    }
+
+    /* 舞台：图片和 canvas 完全重叠 */
+    #farm {
+        position: fixed;
+        inset: 0;                      /* 等价于 top/right/bottom/left: 0 */
+    }
+
+    #bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;             /* 铺满，可能裁掉一点点边缘 */
+        object-position: center;
+        user-select: none;
+        pointer-events: none;          /* 图片本身不接收点击 */
+        image-rendering: -webkit-optimize-contrast;
+    }
+
+    /* canvas 盖在图片上面，完全透明 */
+    #canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        cursor: crosshair;             /* 鼠标变成十字，提示可点击 */
+    }
+
+    /* 导航浮在左上角 */
+    nav {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 10;
+        display: flex;
+        gap: 16px;
+        background: rgba(255, 255, 255, 0.75);
+        padding: 10px 20px;
+        border-radius: 999px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    nav a {
+        color: #2E7D32;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    nav a:hover { text-decoration: underline; }
+
+    /* 提示文字 */
+    #tip {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.8);
+        color: #2E7D32;
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    /* 计数 */
+    #counter {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.8);
+        color: #2E7D32;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-weight: bold;
+    }
+</style>
 </head>
-
 <body>
-    <!--头部-->
-    <div style="background: rgb(40, 141, 89); padding: 20px;">
 
-        <nav>
-            <a href="index.html">首页</a>
-            <a href="about.html">关于</a>
-            <a href="projects.html">项目</a>
-            <a href="blog.html">日志</a>
-            <a href="friends.html">友链</a>
-        </nav>
+<div id="farm">
+    <img id="bg" src="farm.png" alt="数字农场">
 
-        <h1>🚜 欢迎来到我的数字农场</h1>
-        <h2>丰收会光顾这里</h2>
+    <nav>
+        <a href="index.html">首页</a>
+        <a href="about.html">关于</a>
+        <a href="projects.html">项目</a>
+        <a href="blog.html">日志</a>
+        <a href="friends.html">友链</a>
+    </nav>
 
-        <p>这里正在建设中...</p>    
+    <div id="counter">🐾 动物：0 只</div>
+    <div id="tip">在围栏内点击，放一只小动物</div>
 
+    <canvas id="canvas"></canvas>
+</div>
 
-    </div>
+<script>
+    // ========== 1. 动物图片列表 ==========
+    // 这里列出你文件夹里所有动物图的文件名
+    const spritePaths = [
+        'cat.3.png',
+        'cattle1.png',
+        'cattle2.png',
+        'pig1.png',
+        'pig2.png',
+        'sheep1.png',
+        'sheep2.png',
+    ];
 
+    // 存放加载好的图片对象
+    const animalSprites = [];
 
-    <!--内容-->
+    // ========== 2. 等所有图片加载完 ==========
+    Promise.all(spritePaths.map(path => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => {
+                console.error('图片加载失败：', path);
+                reject(path);
+            };
+            img.src = path;
+        });
+    })).then(imgs => {
+        animalSprites.push(...imgs);
+        console.log('✅ 所有动物图片加载完成，共', animalSprites.length, '张');
+    }).catch(err => {
+        console.error('❌ 有图片加载失败：', err);
+    });
 
-    <a href="https://minedensity.top">梦的开始</a>
-    <img src="cat.jpg" alt="小猫守护者" style="width: 150px; height: 120px;">
+    // ========== 3. Canvas 基础设置 ==========
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const counter = document.getElementById('counter');
 
-    <p>我无比期待着<span style="color: rgb(237, 207, 55);">丰收</span></p>
+    let W = 0, H = 0;
 
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-    <!--鼠标-->
-    <p id="coords">鼠标位置：</p>
-    <div id="mouse" style="width:50px;height:50px;background:red;position:absolute;"></div>
+    // ========== 4. 围栏区域（百分比坐标） ==========
+    // 这四个点是围栏内部的近似多边形，你之后可以微调
+    // 坐标是 0~1 的比例，左上角是 (0,0)，右下角是 (1,1)
+    const fencePolygon = [
+        { x: 0.08, y: 0.62 },   // 左上：房子右侧
+        { x: 0.68, y: 0.52 },   // 右上：围栏最右端
+        { x: 0.98, y: 0.98 },   // 右下
+        { x: 0.03, y: 0.98 },   // 左下
+    ];
 
-    <!--文字内容-->
-    <ul>
-        <li>第一项</li>
-        <li>第二项</li>
-        <li>第三项</li>
-    </ul>
-    <ol>
-        <li>第一步</li>
-        <li>第二步</li>
-    </ol>
-   <div class="card" style="background: rgb(13, 112, 58);">
-    这是一个卡片样式的内容块，带有圆角和边框。
-    </div>
-
-    <!--角色跟随图像-->
-    <img id="character" src="girl_sit.png" alt="小女孩">
-
-    <!--canvas-->
-    <canvas id="canvas" width="800" height="600"></canvas>
-
-
-    <!--点击-->
-    <button id="myBtn">点我</button>
-    <button id="colorBtn">变色龙</button>
-    
-
-    <!-- 底部 -->
-    <div style="background: rgb(40,141,89); padding: 20px;">
-    <p>© 2026 我的数字农场 · 正在生长中 🌱</p>
-    </div>
-
-
-    <!-- 所有 JavaScript 放在 body 末尾 -->
-    <script>
-        console.log("你好，农场！");
-
-        let name = "佩洛斯莉";
-        let cname = "佩佩";
-        const age = 18;
-        let hobbies = ["种植", "旅行", "编程"];
-        let person = {
-            name: "佩洛斯莉",
-            age: 18,
-            hobbies: ["种植", "旅行", "编程"]
-        };
-        console.log("我的名字是" + name + ",今年" + age + "岁，" + "你也可以叫我" + cname + "。");
-
-        function SayHello(geust) {
-            return "你好啊，远道而来的" + geust + "，欢迎来到我的数字农场！";
+    // 判断点是否在多边形内（射线法）
+    function isInsideFence(nx, ny) {
+        const poly = fencePolygon;
+        let inside = false;
+        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+            const xi = poly[i].x, yi = poly[i].y;
+            const xj = poly[j].x, yj = poly[j].y;
+            const intersect = ((yi > ny) !== (yj > ny)) &&
+                (nx < (xj - xi) * (ny - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
         }
-        console.log(SayHello("旅者"));
+        return inside;
+    }
 
-        document.getElementById('myBtn').addEventListener('click', function() {
-        alert('🐔 你点了一下！');
+    // ========== 5. 动物数据 ==========
+    const animals = [];
+
+    // ========== 6. 点击生成动物 ==========
+    canvas.addEventListener('click', function(e) {
+        // 图片还没加载完，直接返回
+        if (animalSprites.length === 0) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+
+        // 换算成 0~1 的归一化坐标
+        const nx = screenX / W;
+        const ny = screenY / H;
+
+        // 不在围栏内就忽略
+        if (!isInsideFence(nx, ny)) {
+            console.log('点击在围栏外，忽略');
+            return;
+        }
+
+        // 在围栏内，生成一只随机动物
+        animals.push({
+            x: nx,
+            y: ny,
+            vx: (Math.random() - 0.5) * 0.002,   // 归一化速度
+            vy: (Math.random() - 0.5) * 0.002,
+            scale: 0.7 + Math.random() * 0.5,
+            sprite: animalSprites[Math.floor(Math.random() * animalSprites.length)],
+            facing: 1,                            // 1 朝右，-1 朝左
         });
 
+        counter.textContent = '🐾 动物：' + animals.length + ' 只';
+        console.log('放了一只动物，当前共', animals.length, '只');
+    });
 
-        // 定义 title
-        const title = document.querySelector('h1');
+    // ========== 7. 更新动物位置 ==========
+    function updateAnimals() {
+        for (const a of animals) {
+            a.x += a.vx;
+            a.y += a.vy;
 
-        // 修改文字
-        title.innerHTML = '🚜 我的数字农场';
+            // 简化版：用矩形范围反弹（后面可以改成精确围栏）
+            if (a.x < 0.06 || a.x > 0.95) a.vx *= -1;
+            if (a.y < 0.55 || a.y > 0.95) a.vy *= -1;
 
-
-        // 修改样式
-        title.style.color = '#2E7D32';
-
-        // 添加/移除类
-        title.classList.add('highlight');
-        title.classList.remove('highlight');
-        
-        document.getElementById('colorBtn').addEventListener('click', function() {
-            const r = Math.floor(Math.random() * 256);
-            const g = Math.floor(Math.random() * 256);
-            const b = Math.floor(Math.random() * 256);
-            title.style.color = `rgb(${r}, ${g}, ${b})`;
-        });          
-
-
-        //获取鼠标位置
-        document.addEventListener('mousemove', function(e) {
-            document.getElementById('coords').innerHTML = 
-            '鼠标位置：X=' + e.clientX + ', Y=' + e.clientY;
-        });
-        
-        //鼠标样式
-        const mouse = document.getElementById('mouse');
-        document.addEventListener('mousemove', function(e) {
-            mouse.style.left = e.clientX + 'px';
-            mouse.style.top = e.clientY + 'px';
-        });
-
-        // ========== Day 3: 用 JS 加载图片 ==========
-        const img = new Image();
-        img.src = 'https://picsum.photos/100/100';
-        img.onload = function() {
-            document.body.appendChild(img);
-        };
-
-       // 点击生成图片（Day 4 正确实现）
-        document.addEventListener('click', function(e) {
-            // 创建 img 元素，而不是 div
-            const img = document.createElement('img');
-            // 使用随机图片，每次点击显示不同图片
-            img.src = 'https://picsum.photos/80/80?random=' + Date.now();
-            // 设置样式：固定在点击位置
-            img.style.cssText = `
-                position: fixed;
-                left: ${e.clientX - 40}px;   /* 让图片中心对准鼠标 */
-                top: ${e.clientY - 40}px;
-                width: 80px;
-                height: 80px;
-                border-radius: 10px;
-                border: 2px solid #fff;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                pointer-events: none;        /* 点击穿透，不影响后续点击 */
-                z-index: 1000;
-            `;
-            document.body.appendChild(img);
-        });
-
-        //canvas绘图
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // 画一个蓝色矩形
-        ctx.fillStyle = '#4CAF50';
-        ctx.fillRect(100, 100, 200, 150);
-        
-        // 画一个圆
-        ctx.beginPath();
-        ctx.arc(400, 300, 50, 0, Math.PI * 2);
-        ctx.fillStyle = '#FF6F00';
-        ctx.fill();
-
-        // 天空渐变
-        const sky = ctx.createLinearGradient(0, 0, 0, 400);
-        sky.addColorStop(0, '#87CEEB');
-        sky.addColorStop(1, '#E8F5E9');
-        ctx.fillStyle = sky;
-        ctx.fillRect(0, 0, 800, 400);
-
-        // 草地
-        ctx.fillStyle = '#7CB342';
-        ctx.fillRect(0, 400, 800, 200);
-
-        // 画围栏木桩
-        for (let i = 0; i < 10; i++) {
-            const x = 50 + i * 80;
-            ctx.fillStyle = '#8D6E63';
-            ctx.fillRect(x, 400, 15, 60);  // 木桩
+            // 记录朝向
+            if (a.vx < -0.0001) a.facing = -1;
+            else if (a.vx > 0.0001) a.facing = 1;
         }
+    }
 
-        // 画横梁
-        ctx.fillStyle = '#6D4C41';
-        ctx.fillRect(40, 415, 730, 10);
-        ctx.fillRect(40, 445, 730, 10);
+    // ========== 8. 画动物 ==========
+    function drawAnimals() {
+        for (const a of animals) {
+            // 统一按高度缩放，宽度按原图比例算
+            const baseH = 80;                          // 动物在屏幕上的基准高度
+            const h = baseH * a.scale;
+            const w = h * (a.sprite.width / a.sprite.height);
+            const px = a.x * W;
+            const py = a.y * H;
 
-        function drawBackground() {
-        const canvas = document.getElementById('farm');
-        const ctx = canvas.getContext('2d');
-        const W = 800, H = 600;
-        
-        // 1. 天空渐变
-        const sky = ctx.createLinearGradient(0, 0, 0, H * 0.7);
-        sky.addColorStop(0, '#64B5F6');
-        sky.addColorStop(1, '#B3E5FC');
-        ctx.fillStyle = sky;
-        ctx.fillRect(0, 0, W, H * 0.7);
-        
-        // 2. 草地
-        const grass = ctx.createLinearGradient(0, H * 0.65, 0, H);
-        grass.addColorStop(0, '#8BC34A');
-        grass.addColorStop(1, '#558B2F');
-        ctx.fillStyle = grass;
-        ctx.fillRect(0, H * 0.65, W, H * 0.35);
-        
-        // 3. 围栏（木桩+横梁）
-        ctx.fillStyle = '#795548';
-        for (let i = 0; i < 12; i++) {
-            ctx.fillRect(40 + i * 68, H * 0.63, 12, 50);
-        }
-        ctx.fillStyle = '#5D4037';
-        ctx.fillRect(35, H * 0.65, 740, 8);
-        ctx.fillRect(35, H * 0.68, 740, 8);
-        }
-        
-        function drawHouse() {
-        // 房体
-        ctx.fillStyle = '#EFEBE9';
-        ctx.fillRect(600, 380, 120, 100);
-        
-        // 屋顶（三角形）
-        ctx.fillStyle = '#BF360C';
-        ctx.beginPath();
-        ctx.moveTo(580, 380);
-        ctx.lineTo(660, 330);
-        ctx.lineTo(740, 380);
-        ctx.closePath();
-        ctx.fill();
-        
-        // 门
-        ctx.fillStyle = '#4E342E';
-        ctx.fillRect(645, 440, 30, 40);
-        
-        // 窗户
-        ctx.fillStyle = '#81D4FA';
-        ctx.fillRect(615, 405, 25, 25);
-        ctx.fillRect(680, 405, 25, 25);
-        }
+            ctx.save();
 
-
-        function drawTree(x, y) {
-        // 树干
-        ctx.fillStyle = '#6D4C41';
-        ctx.fillRect(x, y, 15, 50);
-        
-        // 树冠（三个圆叠起来）
-        ctx.fillStyle = '#388E3C';
-        ctx.beginPath();
-        ctx.arc(x + 7, y - 10, 30, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(x - 10, y + 5, 22, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(x + 24, y + 5, 22, 0, Math.PI * 2);
-        ctx.fill();
-        }
-
-        function drawCloud(x, y) {
-            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            // 影子
+            ctx.fillStyle = 'rgba(0,0,0,0.15)';
             ctx.beginPath();
-            ctx.arc(x, y, 40, 0, Math.PI * 2);
-            ctx.arc(x - 35, y + 10, 30, 0, Math.PI * 2);
-            ctx.arc(x + 35, y + 10, 30, 0, Math.PI * 2);
-            ctx.arc(x - 15, y - 15, 25, 0, Math.PI * 2);
-            ctx.arc(x + 15, y - 15, 25, 0, Math.PI * 2);
+            ctx.ellipse(px, py + h * 0.4, w * 0.35, h * 0.12, 0, 0, Math.PI * 2);
             ctx.fill();
-        }
 
-        function drawBackground() {
-        // ... 天空、草地、围栏
-        drawHouse();
-        drawTree(150, 390);
-        drawTree(250, 380);
-        drawCloud(200, 80);
-        drawCloud(500, 50);
-     }
-
-     let sunProgress = 0;  // 0=清晨，1=黄昏
-
-     function drawSun() {
-        const x = 700;
-        const y = 60 + sunProgress * 250;
-        
-        // 发光光晕
-        const gradient = ctx.createRadialGradient(x, y, 10, x, y, 80);
-        gradient.addColorStop(0, 'rgba(255,235,59,0.6)');
-        gradient.addColorStop(1, 'rgba(255,235,59,0)');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x, y, 80, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // 太阳本身
-        ctx.fillStyle = '#FFD54F';
-        ctx.beginPath();
-        ctx.arc(x, y, 40, 0, Math.PI * 2);
-        ctx.fill();
-     }
-
-
-        function drawScene() {
-        ctx.clearRect(0, 0, 800, 600);
-        drawBackground();
-        drawSun();
-        drawAnimals();  // 这个我们下周加
-        requestAnimationFrame(drawScene);
-     }
-
-     // 用Canvas画一个简易小鸡作为占位
-        function createDummyAnimal() {
-            const c = document.createElement('canvas');
-            c.width = 50; c.height = 40;
-            const cx = c.getContext('2d');
-            // 身体（黄色圆）
-            cx.fillStyle = '#FFD600';
-            cx.beginPath();
-            cx.arc(25, 25, 18, 0, Math.PI * 2);
-            cx.fill();
-            // 头
-            cx.beginPath();
-            cx.arc(38, 15, 12, 0, Math.PI * 2);
-            cx.fill();
-            // 眼睛
-            cx.fillStyle = '#000';
-            cx.beginPath();
-            cx.arc(42, 12, 3, 0, Math.PI * 2);
-            cx.fill();
-            // 嘴巴
-            cx.fillStyle = '#FF6F00';
-            cx.beginPath();
-            cx.moveTo(48, 18);
-            cx.lineTo(55, 16);
-            cx.lineTo(48, 14);
-            cx.closePath();
-            cx.fill();
-            return c;
-        }
-
-        const animals = [];
-        const animalImages = [];  // 存放图片对象
-
-        function initAnimals() {
-            // 用AI生成或Canvas绘制的图片
-            animalImages.push(createDummyAnimal());
-            // 后续可以替换为真实图片
-        }
-
-        // 点击生成动物
-        canvas.addEventListener('click', function(e) {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // 只允许在围栏区域内生成
-            if (x > 50 && x < 750 && y > 400 && y < 580) {
-                animals.push({
-                    x: x,
-                    y: y,
-                    vx: (Math.random() - 0.5) * 3,
-                    vy: (Math.random() - 0.5) * 3,
-                    img: animalImages[Math.floor(Math.random() * animalImages.length)],
-                    scale: 0.8 + Math.random() * 0.4
-                });
+            // 朝向翻转
+            if (a.facing === -1) {
+                ctx.translate(px, py);
+                ctx.scale(-1, 1);
+                ctx.drawImage(a.sprite, -w / 2, -h / 2, w, h);
+            } else {
+                ctx.drawImage(a.sprite, px - w / 2, py - h / 2, w, h);
             }
-        });
 
-
-        function drawAnimals() {
-            for (let a of animals) {
-                const w = 40 * a.scale;
-                const h = 32 * a.scale;
-                ctx.drawImage(a.img, a.x - w/2, a.y - h/2, w, h);
-            }
+            ctx.restore();
         }
+    }
 
+    // ========== 9. 动画循环 ==========
+    function loop() {
+        ctx.clearRect(0, 0, W, H);   // 清空 canvas，露出下面的背景图
+        updateAnimals();
+        drawAnimals();
+        requestAnimationFrame(loop);
+    }
 
-        function updateAnimals() {
-            for (let a of animals) {
-                a.x += a.vx;
-                a.y += a.vy;
-                
-                // 围栏边界反弹
-                if (a.x < 55 || a.x > 745) a.vx *= -1;
-                if (a.y < 410 || a.y > 575) a.vy *= -1;
-            }
-        }
-
-        // 在动画循环中调用
-        function drawScene() {
-            ctx.clearRect(0, 0, 800, 600);
-            drawBackground();
-            drawSun();
-            updateAnimals();
-            drawAnimals();
-            requestAnimationFrame(drawScene);
-        }
-
-        function drawAnimals() {
-            for (let a of animals) {
-                ctx.save();
-                // 根据速度方向翻转
-                if (a.vx < 0) {
-                    ctx.translate(a.x, a.y);
-                    ctx.scale(-1, 1);
-                    ctx.translate(-a.x, -a.y);
-                }
-                const w = 40 * a.scale;
-                const h = 32 * a.scale;
-                ctx.drawImage(a.img, a.x - w/2, a.y - h/2, w, h);
-                ctx.restore();
-            }
-        }
-
-
-        function updateSun() {
-            // 0只=清晨(0)，20只=黄昏(1)
-            sunProgress = Math.min(animals.length / 20, 1);
-        }
-
-        // 在drawScene中调用
-        function drawScene() {
-            updateSun();
-            // ...
-        }
-
-    </script>
-
-
+    loop();   // 启动动画
+</script>
 </body>
 </html>
