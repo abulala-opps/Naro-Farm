@@ -19,21 +19,6 @@ body {
 }
 
 
-
-/* ====导航栏====*/
-nav {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    background: #a0e0a0;
-    padding: 12px;
-}
-
-nav a {
-    color: white;
-    text-decoration: none;  /* 去掉下划线 */
-}
-
 /* ====固定角色 ====*/
 #character {
     position: fixed;
@@ -69,3 +54,41 @@ nav a {
     color: white;
 }
 
+/* ========== 全站统一导航栏 ========== */
+.top-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 8px 16px;
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(139, 111, 71, 0.15);
+    white-space: nowrap;
+}
+
+.top-nav a {
+    color: #6B8E4E;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    transition: all 0.2s;
+}
+
+.top-nav a:hover {
+    background: rgba(107, 142, 78, 0.1);
+    color: #2E7D32;
+}
+
+/* 当前页高亮 */
+.top-nav a.active {
+    color: #fff;
+    background: #E67E22;
+    box-shadow: 0 2px 8px rgba(230, 126, 34, 0.4);
+}

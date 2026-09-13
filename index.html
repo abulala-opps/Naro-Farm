@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>我的数字农场</title>
+<link rel="stylesheet" href="style.css">
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -38,28 +39,6 @@
         height: 100%;
         cursor: crosshair;             /* 鼠标变成十字，提示可点击 */
     }
-
-    /* 导航浮在左上角 */
-    nav {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        display: flex;
-        gap: 16px;
-        background: rgba(255, 255, 255, 0.75);
-        padding: 10px 20px;
-        border-radius: 999px;
-        backdrop-filter: blur(6px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    nav a {
-        color: #2E7D32;
-        text-decoration: none;
-        font-weight: bold;
-    }
-    nav a:hover { text-decoration: underline; }
 
     /* 提示文字 */
     #tip {
@@ -198,12 +177,12 @@
 <body>
 
 <div id="farm">
-    <img id="bg" src="farm.png" alt="数字农场">
+    <img id="bg" src="images/farm.png" alt="数字农场">
 
-    <nav>
-        <a href="index.html">首页</a>
-        <a href="about.html">简介</a>
-        <a href="projects.html">项目</a>
+    <nav class="top-nav">
+        <a href="index.html" class="active">首页</a>
+        <a href="about.html" >简介</a>
+        <a href="projects.html" >项目</a>
         <a href="blog.html">日志</a>
         <a href="friends.html">友链</a>
     </nav>
@@ -226,13 +205,13 @@
     // ========== 1. 动物图片列表 ==========
     // 这里列出你文件夹里所有动物图的文件名
     const spritePaths = [
-        'cat.3.png',
-        'cattle1.png',
-        'cattle2.png',
-        'pig1.png',
-        'pig2.png',
-        'sheep1.png',
-        'sheep2.png',
+        'images/cat.3.png',
+        'images/cattle1.png',
+        'images/cattle2.png',
+        'images/pig1.png',
+        'images/pig2.png',
+        'images/sheep1.png',
+        'images/sheep2.png',
     ];
 
     // 存放加载好的图片对象

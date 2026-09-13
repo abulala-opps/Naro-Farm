@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>简介 · naro 的数字农场</title>
+<link rel="stylesheet" href="style.css">
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -16,55 +17,10 @@
         padding-bottom: 80px;
     }
 
-    /* ===== 导航栏（和首页一致） ===== */
-    nav {
-        position: sticky;
-        top: 20px;
-        margin: 20px auto 0;
-        width: fit-content;
-        z-index: 100;
-        display: flex;
-        gap: 16px;
-        background: rgba(255, 255, 255, 0.85);
-        padding: 10px 24px;
-        border-radius: 999px;
-        backdrop-filter: blur(8px);
-        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.12);
-        animation: slideDown 0.6s ease-out both;
-    }
-    nav a {
-        color: #6B8E4E;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 15px;
-        transition: color 0.2s;
-    }
-    nav a:hover { color: #2E7D32; }
-    nav a.active {
-        color: #E67E22;
-        position: relative;
-    }
-    nav a.active::after {
-        content: "";
-        position: absolute;
-        left: 50%;
-        bottom: -6px;
-        transform: translateX(-50%);
-        width: 16px;
-        height: 3px;
-        background: #E67E22;
-        border-radius: 2px;
-    }
-
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-20px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
     /* ===== 主容器 ===== */
     .container {
         max-width: 1100px;
-        margin: 40px auto 0;
+        margin: 120px auto 0;
         padding: 0 40px;
         display: grid;
         grid-template-columns: 1.2fr 1fr;
@@ -78,10 +34,11 @@
     }
 
     .intro h1 {
-        font-size: 42px;
+        font-size: 34px;
         color: #6B8E4E;
         margin-bottom: 8px;
         letter-spacing: 2px;
+        white-space: nowrap; 
     }
     .intro h1 .name {
         color: #E67E22;
@@ -135,8 +92,13 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 18px rgba(139, 111, 71, 0.15);
     }
-    .info-item .icon {
-        font-size: 20px;
+    .info-item .icon-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;        /* 圆形头像 */
+        object-fit: cover;
+        flex-shrink: 0;            /* 不被压缩 */
+        background: rgba(107, 142, 78, 0.1);  /* 兜底底色 */
     }
     .info-item .label {
         color: #A89880;
@@ -183,6 +145,8 @@
     .portrait {
         position: relative;
         animation: fadeInRight 1s ease-out 0.5s both;
+        align-self: start;        
+        margin-top: 20px;       
     }
     .portrait img {
         width: 100%;
@@ -258,7 +222,7 @@
 <body>
 
     <!-- 导航栏 -->
-    <nav>
+    <nav class="top-nav">
         <a href="index.html">首页</a>
         <a href="about.html" class="active">简介</a>
         <a href="projects.html">项目</a>
@@ -284,28 +248,28 @@
             <!-- 角色信息卡 -->
             <div class="info-card">
                 <div class="info-item">
-                    <span class="icon">🎂</span>
+                    <img class="icon-img" src="images/naro_birthday.png" alt="生日">
                     <div>
                         <div class="label">生日</div>
                         <div class="value">5.20</div>
                     </div>
                 </div>
                 <div class="info-item">
-                    <span class="icon">🌱</span>
+                    <img class="icon-img" src="images/naro_age.png" alt="年龄">
                     <div>
                         <div class="label">年龄</div>
                         <div class="value">15</div>
                     </div>
                 </div>
                 <div class="info-item">
-                    <span class="icon">🌍</span>
+                    <img class="icon-img" src="images/naro_earth.png" alt="坐标">
                     <div>
                         <div class="label">坐标</div>
                         <div class="value">艾波斯星球</div>
                     </div>
                 </div>
                 <div class="info-item">
-                    <span class="icon">💻</span>
+                    <img class="icon-img" src="images/naro_language.png" alt="语言">
                     <div>
                         <div class="label">语言</div>
                         <div class="value">中文</div>
@@ -314,7 +278,7 @@
             </div>
 
             <!-- 爱好 -->
-            <h3 class="section-title">naro的的爱好</h3>
+            <h3 class="section-title">naro的爱好</h3>
             <ul class="hobbies">
                 <li>记录一切值得记录的东西</li>
                 <li>经营农场</li>
@@ -327,7 +291,7 @@
 
         <!-- 右侧立绘 -->
         <div class="portrait">
-            <img src="naro.png" alt="naro 立绘">
+            <img src="images/naro.png" alt="naro 立绘">
         </div>
 
     </div>
