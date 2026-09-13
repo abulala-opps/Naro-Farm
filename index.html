@@ -43,7 +43,8 @@
     nav {
         position: absolute;
         top: 20px;
-        left: 20px;
+        left: 50%;
+        transform: translateX(-50%);
         z-index: 10;
         display: flex;
         gap: 16px;
@@ -87,6 +88,111 @@
         border-radius: 999px;
         font-weight: bold;
     }
+
+    /* ===== 欢迎文字（一直显示版） ===== */
+    #welcome {
+        position: absolute;
+        top: 30%;                     /* 偏上，不挡围栏和动物 */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;                  /* 浮在动物上面 */
+        pointer-events: none;         /* 不挡点击 */
+
+        font-size: 52px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.35),
+            0 2px 6px rgba(0, 0, 0, 0.25);
+        letter-spacing: 6px;
+        white-space: nowrap;
+
+        /* 初始隐藏 */
+        opacity: 0;
+
+        /* 只保留"滚动进入"动画，不做淡出 */
+        animation: welcomeEnter 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+    }
+
+    /* naro 高亮 */
+    #welcome .name {
+        color: #FFE082;
+        font-size: 1.3em;
+        margin: 0 10px;
+        display: inline-block;
+        animation: namePulse 2s ease-in-out infinite;
+    }
+
+    /* 滚动进入 */
+    @keyframes welcomeEnter {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, 100px) scale(0.7);
+        }
+        55% {
+            opacity: 1;
+            transform: translate(-50%, -12px) scale(1.06);   /* 冲过头一点 */
+        }
+        75% {
+            transform: translate(-50%, 4px) scale(0.98);     /* 回弹 */
+        }
+        100% {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+    }
+
+    /* naro 呼吸发光 */
+    @keyframes namePulse {
+        0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 0 8px rgba(255, 224, 130, 0.6));
+        }
+        50% {
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 18px rgba(255, 224, 130, 0.95));
+        }
+    }
+
+/* ===== 樱花容器 ===== */
+#sakura {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;    /* 不挡点击 */
+    overflow: hidden;
+    z-index: 5;              /* 在背景图之上、文字之下 */
+}
+
+/* 单片樱花 */
+.sakura-petal {
+    position: absolute;
+    top: -30px;
+    width: 14px;
+    height: 14px;
+    background: radial-gradient(circle at 30% 30%, #FFE4EC, #FFB7C5 60%, #F48FB1);
+    border-radius: 50% 0 50% 50%;      /* 花瓣形状 */
+    opacity: 0.9;
+    animation: sakuraFall linear infinite;
+    will-change: transform;
+}
+
+    /* 飘落轨迹：左右摇摆 + 旋转 */
+    @keyframes sakuraFall {
+        0% {
+            transform: translateY(-30px) translateX(0) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.9;
+        }
+        90% {
+            opacity: 0.9;
+        }
+        100% {
+            transform: translateY(105vh) translateX(60px) rotate(360deg);
+            opacity: 0;
+        }
+    }
 </style>
 </head>
 <body>
@@ -106,6 +212,14 @@
     <div id="tip">在围栏内点击，放一只小动物</div>
 
     <canvas id="canvas"></canvas>
+
+    <div id="welcome">
+        <span class="line">欢迎来到</span>
+        <span class="name">naro</span>
+        <span class="line">的农场</span>
+    </div>
+
+    <div id="sakura"></div>
 </div>
 
 <script>
@@ -279,6 +393,39 @@
     }
 
     loop();   // 启动动画
+
+    // ========== 樱花飘落特效 ==========
+    function createSakura() {
+        const container = document.getElementById('sakura');
+        const PETAL_COUNT = 25;   // 花瓣数量，太多会卡
+
+        for (let i = 0; i < PETAL_COUNT; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'sakura-petal';
+
+            // 随机水平位置
+            petal.style.left = Math.random() * 100 + '%';
+
+            // 随机大小
+            const size = 8 + Math.random() * 10;
+            petal.style.width = size + 'px';
+            petal.style.height = size + 'px';
+
+            // 随机飘落时长（越慢越优雅）
+            const duration = 8 + Math.random() * 8;   // 8~16 秒
+            petal.style.animationDuration = duration + 's';
+
+            // 随机延迟，让花瓣错开出现
+            petal.style.animationDelay = Math.random() * 10 + 's';
+
+            // 随机透明度
+            petal.style.opacity = 0.5 + Math.random() * 0.5;
+
+            container.appendChild(petal);
+        }
+    }
+
+    createSakura();
 </script>
 </body>
 </html>
