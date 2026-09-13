@@ -1,37 +1,348 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>我的数字农场</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简介 · naro 的数字农场</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(160deg, #FDF8F0 0%, #F5EDE0 100%);
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #3E3A36;
+        line-height: 1.8;
+        padding-bottom: 80px;
+    }
+
+    /* ===== 导航栏（和首页一致） ===== */
+    nav {
+        position: sticky;
+        top: 20px;
+        margin: 20px auto 0;
+        width: fit-content;
+        z-index: 100;
+        display: flex;
+        gap: 16px;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 10px 24px;
+        border-radius: 999px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.12);
+        animation: slideDown 0.6s ease-out both;
+    }
+    nav a {
+        color: #6B8E4E;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 15px;
+        transition: color 0.2s;
+    }
+    nav a:hover { color: #2E7D32; }
+    nav a.active {
+        color: #E67E22;
+        position: relative;
+    }
+    nav a.active::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -6px;
+        transform: translateX(-50%);
+        width: 16px;
+        height: 3px;
+        background: #E67E22;
+        border-radius: 2px;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 主容器 ===== */
+    .container {
+        max-width: 1100px;
+        margin: 40px auto 0;
+        padding: 0 40px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    /* ===== 左侧文字 ===== */
+    .intro {
+        animation: fadeInLeft 1s ease-out 0.3s both;
+    }
+
+    .intro h1 {
+        font-size: 42px;
+        color: #6B8E4E;
+        margin-bottom: 8px;
+        letter-spacing: 2px;
+    }
+    .intro h1 .name {
+        color: #E67E22;
+        font-size: 1.2em;
+    }
+    .intro .subtitle {
+        color: #A89880;
+        font-size: 14px;
+        margin-bottom: 28px;
+        letter-spacing: 1px;
+    }
+
+    .opening {
+        font-size: 20px;
+        color: #6B8E4E;
+        font-style: italic;
+        padding: 16px 20px;
+        border-left: 4px solid #E67E22;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        margin-bottom: 28px;
+        line-height: 1.7;
+    }
+
+    .intro p {
+        font-size: 16px;
+        color: #5A5248;
+        margin-bottom: 16px;
+    }
+
+    /* ===== 角色信息卡 ===== */
+    .info-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 32px;
+        margin-bottom: 40px;
+    }
+    .info-item {
+        background: rgba(255, 255, 255, 0.85);
+        padding: 14px 18px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(139, 111, 71, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .info-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(139, 111, 71, 0.15);
+    }
+    .info-item .icon {
+        font-size: 20px;
+    }
+    .info-item .label {
+        color: #A89880;
+        font-size: 13px;
+    }
+    .info-item .value {
+        color: #3E3A36;
+        font-weight: bold;
+    }
+
+    /* ===== 爱好列表 ===== */
+    .section-title {
+        font-size: 18px;
+        color: #6B8E4E;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .section-title::before,
+    .section-title::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(139, 111, 71, 0.2);
+    }
+
+    .hobbies {
+        list-style: none;
+        margin-bottom: 40px;
+    }
+    .hobbies li {
+        padding: 10px 0;
+        font-size: 16px;
+        color: #5A5248;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px dashed rgba(139, 111, 71, 0.15);
+    }
+    .hobbies li:last-child { border-bottom: none; }
+
+    /* ===== 右侧立绘 ===== */
+    .portrait {
+        position: relative;
+        animation: fadeInRight 1s ease-out 0.5s both;
+    }
+    .portrait img {
+        width: 100%;
+        max-width: 460px;
+        display: block;
+        margin: 0 auto;
+        filter: drop-shadow(0 20px 40px rgba(139, 111, 71, 0.2));
+        animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-12px); }
+    }
+
+    @keyframes fadeInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ===== 底部说明卡 ===== */
+    .about-farm {
+        max-width: 1100px;
+        margin: 60px auto 0;
+        padding: 32px 40px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(139, 111, 71, 0.08);
+        animation: fadeInUp 1s ease-out 0.8s both;
+    }
+    .about-farm h3 {
+        color: #6B8E4E;
+        font-size: 20px;
+        margin-bottom: 16px;
+    }
+    .about-farm p {
+        color: #5A5248;
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 页脚 ===== */
+    footer {
+        text-align: center;
+        margin-top: 80px;
+        color: #A89880;
+        font-size: 14px;
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 900px) {
+        .container {
+            grid-template-columns: 1fr;
+            gap: 40px;
+            padding: 0 24px;
+        }
+        .portrait { order: -1; }
+        .portrait img { max-width: 280px; }
+        .intro h1 { font-size: 32px; }
+        .info-card { grid-template-columns: 1fr; }
+    }
+</style>
 </head>
 <body>
-    <!--头部-->
-    <div class="header">
 
-        <nav>
-            <a href="index.html">首页</a>
-            <a href="about.html">关于</a>
-            <a href="projects.html">项目</a>
-            <a href="blog.html">日志</a>
-            <a href="friends.html">友链</a>
-        </nav>
+    <!-- 导航栏 -->
+    <nav>
+        <a href="index.html">首页</a>
+        <a href="about.html" class="active">简介</a>
+        <a href="projects.html">项目</a>
+        <a href="blog.html">日志</a>
+        <a href="friends.html">友链</a>
+    </nav>
 
-        <h1>🚜 欢迎来到我的数字农场</h1>
+    <!-- 主内容 -->
+    <div class="container">
 
-        <p>这里正在建设中...</p>    
+        <!-- 左侧文字 -->
+        <div class="intro">
+            <h1># <span class="name">naro</span> —— 数字农场的主人</h1>
+            <p class="subtitle">来自艾波斯星球的神奇女孩</p>
 
+            <div class="opening">
+                "在这片永远是春天的农场里，naro 会种下希望"
+            </div>
+
+            <p>你好呀,naro欢迎你的到来!</p>
+            <p>一切值得被记录的东西都应该留下痕迹</p>
+
+            <!-- 角色信息卡 -->
+            <div class="info-card">
+                <div class="info-item">
+                    <span class="icon">🎂</span>
+                    <div>
+                        <div class="label">生日</div>
+                        <div class="value">5.20</div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="icon">🌱</span>
+                    <div>
+                        <div class="label">年龄</div>
+                        <div class="value">15</div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="icon">🌍</span>
+                    <div>
+                        <div class="label">坐标</div>
+                        <div class="value">艾波斯星球</div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <span class="icon">💻</span>
+                    <div>
+                        <div class="label">语言</div>
+                        <div class="value">中文</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 爱好 -->
+            <h3 class="section-title">naro的的爱好</h3>
+            <ul class="hobbies">
+                <li>记录一切值得记录的东西</li>
+                <li>经营农场</li>
+                <li>写代码</li>
+                <li>养花</li>
+                <li>泡茶</li>
+                <li>香香脆脆的食物</li>
+            </ul>
+        </div>
+
+        <!-- 右侧立绘 -->
+        <div class="portrait">
+            <img src="naro.png" alt="naro 立绘">
+        </div>
 
     </div>
 
-
-    <img id="character" src="girl_sit.png" alt="小女孩">
-
-    
-    <!-- 底部 -->
-    <div class="footer">
-    <p>© 2026 我的数字农场 · 正在生长中 🌱</p>
+    <!-- 关于农场 -->
+    <div class="about-farm">
+        <h3>🌾 关于这个农场</h3>
+        <p>这是我学前端时做的第一个项目。请坐下来喝杯茶吧，naro很擅长泡茶</p>
+        <p>樱花会一直飘，动物会慢慢走，这里永远是春天。</p>
     </div>
-    
+
+    <!-- 页脚 -->
+    <footer>
+        © 2026 我的数字农场 · 正在生长中 🌱
+    </footer>
+
 </body>
 </html>
