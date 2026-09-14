@@ -1,12 +1,266 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>我的数字农场</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日志 · naro 的数字农场</title>
+<link rel="stylesheet" href="style.css">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(160deg, #FDF8F0 0%, #F5EDE0 100%);
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #3E3A36;
+        line-height: 1.8;
+        padding-bottom: 80px;
+    }
+
+    /* ===== 主容器 ===== */
+    .blog-container {
+        max-width: 760px;
+        margin: 140px auto 0;
+        padding: 0 40px;
+    }
+
+    /* 页面标题 */
+    .page-title {
+        text-align: center;
+        margin-bottom: 12px;
+        animation: fadeInDown 0.8s ease-out both;
+    }
+    .page-title h1 {
+        font-size: 36px;
+        color: #6B8E4E;
+        letter-spacing: 2px;
+    }
+    .page-subtitle {
+        text-align: center;
+        color: #A89880;
+        font-size: 15px;
+        margin-bottom: 20px;
+        animation: fadeInDown 0.8s ease-out 0.2s both;
+    }
+
+    /* ===== 顶部统计条 ===== */
+    .blog-stats {
+        text-align: center;
+        color: #A89880;
+        font-size: 14px;
+        padding: 10px 22px;
+        background: rgba(255, 255, 255, 0.55);
+        border-radius: 999px;
+        width: fit-content;
+        margin: 0 auto 60px;
+        box-shadow: 0 2px 10px rgba(139, 111, 71, 0.06);
+        animation: fadeInDown 0.8s ease-out 0.4s both;
+    }
+    .blog-stats strong {
+        color: #E67E22;
+        font-size: 15px;
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 时间轴 ===== */
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+
+    /* 左侧竖线 */
+    .timeline::before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 8px;
+        bottom: 8px;
+        width: 2px;
+        background: linear-gradient(to bottom,
+            rgba(107, 142, 78, 0.4) 0%,
+            rgba(107, 142, 78, 0.15) 100%);
+    }
+
+    /* 单条日志 */
+    .timeline-item {
+        position: relative;
+        margin-bottom: 32px;
+        animation: fadeInUp 0.6s ease-out both;
+    }
+    .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+    .timeline-item:nth-child(5) { animation-delay: 0.5s; }
+    .timeline-item:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 圆点 */
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -34px;
+        top: 22px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #6B8E4E;
+        border: 3px solid #FDF8F0;
+        box-shadow: 0 0 0 2px rgba(107, 142, 78, 0.3);
+        z-index: 1;
+    }
+
+    /* 只有最新一条日志的圆点会"呼吸" */
+    .timeline-item:first-child::before {
+        animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 2px rgba(107, 142, 78, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 0 8px rgba(107, 142, 78, 0.08);
+        }
+    }
+
+    /* 日志卡片 */
+    .log-card {
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 14px;
+        padding: 20px 26px;
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.08);
+        border-left: 4px solid #6B8E4E;      /* 普通日志：绿色条 */
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+    .log-card:hover {
+        transform: translateX(6px);
+        box-shadow: 0 8px 24px rgba(139, 111, 71, 0.15);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    /* 里程碑日志：橙色条 */
+    .log-card.milestone {
+        border-left-color: #E67E22;
+    }
+    .log-card.milestone .log-title::after {
+        content: " ★";
+        color: #E67E22;
+        font-size: 14px;
+    }
+
+    /* 日期 */
+    .log-date {
+        color: #E67E22;
+        font-size: 13px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+    }
+
+    /* 标题 */
+    .log-title {
+        color: #6B8E4E;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    /* 备注（小字） */
+    .log-note {
+        color: #A89880;
+        font-size: 14px;
+        line-height: 1.7;
+        padding-left: 12px;
+        border-left: 2px solid rgba(139, 111, 71, 0.15);
+    }
+
+    /* ===== 标签 ===== */
+    .log-tags {
+        margin-top: 14px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .tag {
+        font-size: 12px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: rgba(107, 142, 78, 0.12);
+        color: #6B8E4E;
+        font-weight: bold;
+        transition: transform 0.2s, background 0.2s;
+    }
+    .tag:hover {
+        transform: translateY(-2px);
+        background: rgba(107, 142, 78, 0.2);
+    }
+
+    /* ===== 底部 ===== */
+    .growing-tip {
+        text-align: center;
+        margin-top: 60px;
+        color: #A89880;
+        font-size: 15px;
+    }
+    .growing-tip::before {
+        content: "🌱 ";
+    }
+
+    /* ===== 回到顶部按钮 ===== */
+    #backToTop {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(107, 142, 78, 0.92);
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s, transform 0.3s, background 0.2s;
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.25);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #backToTop.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    #backToTop:hover {
+        transform: translateY(-4px);
+        background: #E67E22;
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 700px) {
+        .blog-container { margin-top: 120px; padding: 0 24px; }
+        .page-title h1 { font-size: 28px; }
+        .timeline { padding-left: 30px; }
+        .timeline-item::before { left: -26px; }
+        .log-card { padding: 16px 20px; }
+        #backToTop { bottom: 20px; right: 20px; width: 42px; height: 42px; }
+    }
+</style>
 </head>
 <body>
-    <!--头部-->
+
+    <!-- 导航栏 -->
     <nav class="top-nav">
         <a href="index.html">首页</a>
         <a href="about.html">简介</a>
@@ -15,14 +269,102 @@
         <a href="friends.html">友链</a>
     </nav>
 
+    <!-- 主内容 -->
+    <div class="blog-container">
 
-    <img id="character" src="girl_sit.png" alt="小女孩">
+        <div class="page-title">
+            <h1>我的日志</h1>
+        </div>
+        <p class="page-subtitle">这里记录我每一天的成长</p>
 
-    
-    <!-- 底部 -->
-    <div class="footer">
-    <p>© 2026 我的数字农场 · 正在生长中 🌱</p>
+        <!-- 统计条 -->
+        <div class="blog-stats">
+            📔 共 <strong>4</strong> 篇日志 · 从 <strong>2026.09.05</strong> 开始记录
+        </div>
+
+        <!-- 时间轴 -->
+        <div class="timeline">
+
+            <!-- 日志 1：最新 -->
+            <div class="timeline-item">
+                <div class="log-card">
+                    <div class="log-date">2026.09.14</div>
+                    <div class="log-title">完成了项目页 + 日志页模板</div>
+                    <div class="log-note">今天学了 sticky 侧边栏和锚点跳转，留言区也能提交了。但是这个留言栏是假的，不能真正留言。这个有点难，后面再学。</div>
+                    <div class="log-tags">
+                        <span class="tag">前端</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">学习</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 日志 2：里程碑 -->
+            <div class="timeline-item">
+                <div class="log-card milestone">
+                    <div class="log-date">2026.09.13</div>
+                    <div class="log-title">naro的诞生</div>
+                    <div class="log-note">开始装修我的网站了，其实 naro 的形象早就有了，只是今天正式给她取了这个名字，还给她 AI 了很多图哈哈哈。今天完成了"首页"。</div>
+                    <div class="log-tags">
+                        <span class="tag">里程碑</span>
+                        <span class="tag">naro</span>
+                        <span class="tag">设计</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 日志 3 -->
+            <div class="timeline-item">
+                <div class="log-card">
+                    <div class="log-date">2026.09.05</div>
+                    <div class="log-title">学了一些基础的知识</div>
+                    <div class="log-note">从 HTML、CSS 基础开始，跟着DeepSeek做了一个基础的模板，非常丑</div>
+                    <div class="log-tags">
+                        <span class="tag">入门</span>
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 日志 4 -->
+            <div class="timeline-item">
+                <div class="log-card">
+                    <div class="log-date">2026.09.01</div>
+                    <div class="log-title">决定做一个属于自己的网站</div>
+                    <div class="log-note">怕自己学着学着就没动力了，想把自己的成果可视化一下。</div>
+                    <div class="log-tags">
+                        <span class="tag">起点</span>
+                        <span class="tag">计划</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="growing-tip">日志会一天天多起来</p>
+
     </div>
-    
+
+    <!-- 回到顶部按钮 -->
+    <button id="backToTop" title="回到顶部">↑</button>
+
+    <!-- ========== 回到顶部 JS ========== -->
+    <script>
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+
 </body>
 </html>

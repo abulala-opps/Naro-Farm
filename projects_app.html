@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>思绪时刻 · 项目详情 · naro 的数字农场</title>
+<link rel="stylesheet" href="style.css">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }   /* 锚点跳转平滑滚动 */
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(160deg, #FDF8F0 0%, #F5EDE0 100%);
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #3E3A36;
+        line-height: 1.9;
+        padding-bottom: 80px;
+    }
+
+    /* ===== 主容器：左文章 + 右目录 ===== */
+    .detail-layout {
+        max-width: 1100px;
+        margin: 140px auto 0;
+        padding: 0 40px;
+        display: grid;
+        grid-template-columns: 1fr 240px;   /* 左宽右窄 */
+        gap: 48px;
+        align-items: start;
+        animation: fadeInUp 0.8s ease-out both;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 文章区 ===== */
+    .article {
+        min-width: 0;   /* grid 里防止内容溢出 */
+    }
+
+    /* 文章头部 */
+    .article-header {
+        padding-bottom: 24px;
+        border-bottom: 2px solid rgba(139, 111, 71, 0.15);
+        margin-bottom: 36px;
+    }
+    .article-header h1 {
+        font-size: 34px;
+        color: #6B8E4E;
+        margin-bottom: 12px;
+        letter-spacing: 1px;
+    }
+    .article-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        color: #A89880;
+        font-size: 14px;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: bold;
+        background: rgba(255, 193, 7, 0.15);
+        color: #B8860B;
+    }
+
+    /* 文章正文 */
+    .article-section {
+        margin-bottom: 48px;
+        scroll-margin-top: 120px;   /* 锚点跳转时，留出导航栏空间 */
+    }
+    .article-section h2 {
+        font-size: 22px;
+        color: #6B8E4E;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .article-section p {
+        color: #5A5248;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    .article-section p:last-child { margin-bottom: 0; }
+
+    /* ===== 右侧目录（sticky） ===== */
+    .toc {
+        position: sticky;
+        top: 100px;                    /* 跟着滚动，固定在顶部 100px */
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 16px;
+        padding: 20px 22px;
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.08);
+    }
+    .toc h3 {
+        font-size: 14px;
+        color: #A89880;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+    }
+    .toc ul {
+        list-style: none;
+    }
+    .toc li {
+        margin-bottom: 6px;
+    }
+    .toc a {
+        display: block;
+        padding: 6px 10px;
+        color: #5A5248;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 8px;
+        transition: background 0.2s, color 0.2s;
+        border-left: 3px solid transparent;
+    }
+    .toc a:hover {
+        background: rgba(107, 142, 78, 0.08);
+        color: #6B8E4E;
+        border-left-color: #E67E22;
+    }
+
+    /* ===== 评论区 ===== */
+    .comments {
+        max-width: 1100px;
+        margin: 80px auto 0;
+        padding: 0 40px;
+    }
+    .comments-title {
+        font-size: 20px;
+        color: #6B8E4E;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .comments-title::before {
+        content: "💬";
+        font-size: 22px;
+    }
+
+    /* 留言表单 */
+    .comment-form {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.08);
+        margin-bottom: 32px;
+    }
+    .comment-form input,
+    .comment-form textarea {
+        width: 100%;
+        border: 1px solid rgba(139, 111, 71, 0.2);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-family: inherit;
+        font-size: 15px;
+        color: #3E3A36;
+        background: #fff;
+        margin-bottom: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .comment-form input:focus,
+    .comment-form textarea:focus {
+        outline: none;
+        border-color: #6B8E4E;
+        box-shadow: 0 0 0 3px rgba(107, 142, 78, 0.1);
+    }
+    .comment-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    .comment-form button {
+        padding: 10px 28px;
+        border: none;
+        border-radius: 999px;
+        background: #E67E22;
+        color: #fff;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .comment-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
+    }
+
+    /* 留言列表 */
+    .comment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .comment-item {
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 14px;
+        padding: 18px 22px;
+        box-shadow: 0 2px 10px rgba(139, 111, 71, 0.06);
+        animation: commentIn 0.4s ease-out both;
+    }
+    @keyframes commentIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .comment-item .comment-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 8px;
+    }
+    .comment-item .comment-name {
+        font-weight: bold;
+        color: #6B8E4E;
+        font-size: 15px;
+    }
+    .comment-item .comment-time {
+        color: #A89880;
+        font-size: 13px;
+    }
+    .comment-item .comment-body {
+        color: #5A5248;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+    .empty-tip {
+        text-align: center;
+        color: #A89880;
+        font-size: 14px;
+        padding: 20px;
+    }
+
+    /* ===== 底部返回 ===== */
+    .back-link-wrapper {
+        max-width: 1100px;
+        margin: 60px auto 0;
+        padding: 0 40px;
+    }
+    .back-link {
+        display: inline-block;
+        color: #E67E22;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 15px;
+        transition: transform 0.2s;
+    }
+    .back-link:hover {
+        transform: translateX(-4px);
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 900px) {
+        .detail-layout {
+            grid-template-columns: 1fr;   /* 小屏只留文章 */
+            margin-top: 120px;
+            padding: 0 24px;
+            gap: 0;
+        }
+        .toc {
+            display: none;                /* 小屏隐藏目录 */
+        }
+        .article-header h1 { font-size: 26px; }
+        .comments, .back-link-wrapper { padding: 0 24px; }
+    }
+</style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="top-nav">
+        <a href="index.html">首页</a>
+        <a href="about.html">简介</a>
+        <a href="projects.html" class="active">项目</a>
+        <a href="blog.html">日志</a>
+        <a href="friends.html">友链</a>
+    </nav>
+
+    <!-- 主布局：左文章 + 右目录 -->
+    <div class="detail-layout">
+
+        <!-- 左侧文章 -->
+        <article class="article">
+
+            <!-- 文章头部 -->
+            <header class="article-header">
+                <h1>思绪时刻</h1>
+                <div class="article-meta">
+                    <span>时间管理类 App</span>
+                    <span>·</span>
+                    <span class="status-badge">搁置中</span>
+                </div>
+            </header>
+
+            <!-- 项目想法 -->
+            <section class="article-section" id="idea">
+                <h2>项目想法</h2>
+                <p>一直想干点什么，已经大一下学期了，万一以后毕业了找不到工作怎么办？后面看到有人说如果感到焦虑的话就去规划自己的时间吧，让自己忙起来，这样生活就会变得充实。
+                    我是人工智能的学生，但是大学其实并学不到什么有用的知识，老师说要就业的话要考研，可是我应该是考不上研究生的。如果我能做出来一个app的话，以后找工作会不会顺利一些呢？
+                    可是我确实什么都不会，网上流行起来了小白徒手也能做软件的热潮，我想着不会也没关系，让AI帮我做吧，边做边学。这是我用Trae CN 做的第一个app。
+                </p>
+            </section>
+
+            <!-- 项目内容 -->
+            <section class="article-section" id="content">
+                <h2>项目内容</h2>
+                <p>这个app有四个索引，包括：“管控”，“思绪”，“统计”，“我的”。
+                    其实主要是由三个功能构成的：1.统计用户每个app的使用时长并做成柱状图进行统计；2.一个可以记录的番茄钟；3.用户在桌面打开应用时询问要使用该app多少时间并进行管控
+                </p>
+            </section>
+
+            <!-- 项目成果 -->
+            <section class="article-section" id="result">
+                <h2>项目成果</h2>
+                <p>第一第二功能实现的还不错，但是第三个功能没有实现，AI无法理解我想要的效果，做出来总是不尽如人意。它总是把我的文件弄乱，但是我那时候连文件管理和调用都没学过，
+                    最终只能无奈放弃。最后在网上学习了用Expo Go打包下载到了自己的手机上，也没有上架。不了了之。
+                </p>
+            </section>
+
+            <!-- 感想 -->
+            <section class="article-section" id="thanks">
+                <h2>感想</h2>
+                <p>AI工具并不是万能的，很多东西需要系统得学习才能够理解，但是AI能够帮你加快你的学习进度，
+                    有句话说的好“你只要考过一次高分，那你的信心就不会被时间磨灭。”（PS：这句话是我高中数学老师说的哈哈哈）
+                </p>
+            </section>
+
+        </article>
+
+        <!-- 右侧目录 -->
+        <aside class="toc">
+            <h3>目录</h3>
+            <ul>
+                <li><a href="#idea">项目想法</a></li>
+                <li><a href="#content">项目内容</a></li>
+                <li><a href="#result"> 项目成果</a></li>
+                <li><a href="#thanks"> 感想</a></li>
+            </ul>
+        </aside>
+
+    </div>
+
+    <!-- 评论区 -->
+    <div class="comments">
+        <h2 class="comments-title">留言</h2>
+
+        <!-- 留言表单 -->
+        <div class="comment-form">
+            <input type="text" id="commentName" placeholder="你的昵称" maxlength="20">
+            <textarea id="commentBody" placeholder="想对 naro 说点什么……" maxlength="300"></textarea>
+            <button id="commentSubmit">提交留言</button>
+        </div>
+
+        <!-- 留言列表 -->
+        <div class="comment-list" id="commentList">
+            <p class="empty-tip">还没有留言，来做第一个吧 🌱</p>
+        </div>
+    </div>
+
+    <!-- 返回 -->
+    <div class="back-link-wrapper">
+        <a href="projects.html" class="back-link">← 返回项目列表</a>
+    </div>
+
+    <!-- ========== 评论区 JS（假评论区，刷新就丢） ========== -->
+    <script>
+        const nameInput = document.getElementById('commentName');
+        const bodyInput = document.getElementById('commentBody');
+        const submitBtn = document.getElementById('commentSubmit');
+        const list = document.getElementById('commentList');
+
+        // 提交留言
+        submitBtn.addEventListener('click', function() {
+            const name = nameInput.value.trim() || '匿名访客';
+            const body = bodyInput.value.trim();
+
+            if (!body) {
+                alert('留言内容不能为空哦～');
+                return;
+            }
+
+            // 移除"还没有留言"提示
+            const empty = list.querySelector('.empty-tip');
+            if (empty) empty.remove();
+
+            // 创建留言元素
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+
+            const now = new Date();
+            const timeStr = now.getFullYear() + '/' +
+                            (now.getMonth() + 1) + '/' +
+                            now.getDate() + ' ' +
+                            String(now.getHours()).padStart(2, '0') + ':' +
+                            String(now.getMinutes()).padStart(2, '0');
+
+            item.innerHTML = `
+                <div class="comment-head">
+                    <span class="comment-name">${escapeHtml(name)}</span>
+                    <span class="comment-time">${timeStr}</span>
+                </div>
+                <div class="comment-body">${escapeHtml(body)}</div>
+            `;
+
+            // 插入到最上面
+            list.insertBefore(item, list.firstChild);
+
+            // 清空输入框
+            nameInput.value = '';
+            bodyInput.value = '';
+        });
+
+        // 简单的 HTML 转义，防止用户输入标签
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[m];
+            });
+        }
+    </script>
+
+</body>
+</html>
