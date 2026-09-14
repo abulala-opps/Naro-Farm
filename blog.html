@@ -19,10 +19,18 @@
         padding-bottom: 80px;
     }
 
-    /* ===== 主容器 ===== */
+    /* ===== 标题区：居中 ===== */
+    .blog-header {
+        max-width: 800px;
+        margin: 140px auto 60px;
+        padding: 0 40px;
+        text-align: center;
+    }
+
+    /* ===== 日志区：右移，避开 naro ===== */
     .blog-container {
-        max-width: 760px;
-        margin: 140px auto 0;
+        max-width: 1000px;
+        margin: 0 60px 0 400px;
         padding: 0 40px;
     }
 
@@ -54,7 +62,7 @@
         background: rgba(255, 255, 255, 0.55);
         border-radius: 999px;
         width: fit-content;
-        margin: 0 auto 60px;
+        margin: 0 auto;
         box-shadow: 0 2px 10px rgba(139, 111, 71, 0.06);
         animation: fadeInDown 0.8s ease-out 0.4s both;
     }
@@ -74,7 +82,6 @@
         padding-left: 40px;
     }
 
-    /* 左侧竖线 */
     .timeline::before {
         content: "";
         position: absolute;
@@ -87,7 +94,6 @@
             rgba(107, 142, 78, 0.15) 100%);
     }
 
-    /* 单条日志 */
     .timeline-item {
         position: relative;
         margin-bottom: 32px;
@@ -120,17 +126,12 @@
         z-index: 1;
     }
 
-    /* 只有最新一条日志的圆点会"呼吸" */
     .timeline-item:first-child::before {
         animation: pulse 2.5s ease-in-out infinite;
     }
     @keyframes pulse {
-        0%, 100% {
-            box-shadow: 0 0 0 2px rgba(107, 142, 78, 0.3);
-        }
-        50% {
-            box-shadow: 0 0 0 8px rgba(107, 142, 78, 0.08);
-        }
+        0%, 100% { box-shadow: 0 0 0 2px rgba(107, 142, 78, 0.3); }
+        50%      { box-shadow: 0 0 0 8px rgba(107, 142, 78, 0.08); }
     }
 
     /* 日志卡片 */
@@ -139,7 +140,7 @@
         border-radius: 14px;
         padding: 20px 26px;
         box-shadow: 0 4px 16px rgba(139, 111, 71, 0.08);
-        border-left: 4px solid #6B8E4E;      /* 普通日志：绿色条 */
+        border-left: 4px solid #6B8E4E;
         transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
     }
     .log-card:hover {
@@ -148,7 +149,6 @@
         background: rgba(255, 255, 255, 0.95);
     }
 
-    /* 里程碑日志：橙色条 */
     .log-card.milestone {
         border-left-color: #E67E22;
     }
@@ -158,7 +158,6 @@
         font-size: 14px;
     }
 
-    /* 日期 */
     .log-date {
         color: #E67E22;
         font-size: 13px;
@@ -166,16 +165,12 @@
         letter-spacing: 1px;
         margin-bottom: 6px;
     }
-
-    /* 标题 */
     .log-title {
         color: #6B8E4E;
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 8px;
     }
-
-    /* 备注（小字） */
     .log-note {
         color: #A89880;
         font-size: 14px;
@@ -184,7 +179,7 @@
         border-left: 2px solid rgba(139, 111, 71, 0.15);
     }
 
-    /* ===== 标签 ===== */
+    /* 标签 */
     .log-tags {
         margin-top: 14px;
         display: flex;
@@ -203,6 +198,55 @@
     .tag:hover {
         transform: translateY(-2px);
         background: rgba(107, 142, 78, 0.2);
+    }
+
+    /* ===== naro 侧边立绘（固定左侧） ===== */
+    .naro-side {
+        position: fixed;
+        left: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 260px;
+        text-align: center;
+        z-index: 5;
+        pointer-events: none;
+        animation: naroEnter 1s ease-out 0.6s both;
+    }
+    .naro-side img {
+        width: 100%;
+        display: block;
+        filter: drop-shadow(0 12px 28px rgba(139, 111, 71, 0.2));
+        animation: naroFloat 4s ease-in-out infinite;
+    }
+    .naro-side .naro-speech {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #6B8E4E;
+        background: rgba(255, 255, 255, 0.75);
+        padding: 8px 14px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(139, 111, 71, 0.1);
+        position: relative;
+    }
+    .naro-side .naro-speech::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 12px;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 2px;
+    }
+
+    @keyframes naroEnter {
+        from { opacity: 0; transform: translate(-30px, -50%); }
+        to   { opacity: 1; transform: translate(0, -50%); }
+    }
+    @keyframes naroFloat {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-10px); }
     }
 
     /* ===== 底部 ===== */
@@ -248,8 +292,16 @@
     }
 
     /* ===== 响应式 ===== */
+    @media (max-width: 1200px) {
+        .naro-side { display: none; }
+        .blog-container {
+            margin: 0 auto 0;
+            padding: 0 40px;
+        }
+    }
     @media (max-width: 700px) {
-        .blog-container { margin-top: 120px; padding: 0 24px; }
+        .blog-header { margin-top: 120px; padding: 0 24px; }
+        .blog-container { padding: 0 24px; }
         .page-title h1 { font-size: 28px; }
         .timeline { padding-left: 30px; }
         .timeline-item::before { left: -26px; }
@@ -269,20 +321,26 @@
         <a href="friends.html">友链</a>
     </nav>
 
-    <!-- 主内容 -->
-    <div class="blog-container">
+    <!-- naro 侧边立绘 -->
+    <div class="naro-side">
+        <img src="images/naro_read.png" alt="naro 正在读日志">
+        <div class="naro-speech">naro 正在读你的日志……</div>
+    </div>
 
+    <!-- 标题区（居中） -->
+    <div class="blog-header">
         <div class="page-title">
             <h1>我的日志</h1>
         </div>
         <p class="page-subtitle">这里记录我每一天的成长</p>
-
-        <!-- 统计条 -->
         <div class="blog-stats">
             📔 共 <strong>4</strong> 篇日志 · 从 <strong>2026.09.05</strong> 开始记录
         </div>
+    </div>
 
-        <!-- 时间轴 -->
+    <!-- 日志区（右移） -->
+    <div class="blog-container">
+
         <div class="timeline">
 
             <!-- 日志 1：最新 -->
@@ -290,7 +348,7 @@
                 <div class="log-card">
                     <div class="log-date">2026.09.14</div>
                     <div class="log-title">完成了项目页 + 日志页模板</div>
-                    <div class="log-note">今天学了 sticky 侧边栏和锚点跳转，留言区也能提交了。但是这个留言栏是假的，不能真正留言。这个有点难，后面再学。</div>
+                    <div class="log-note">今天学了 sticky 侧边栏和锚点跳转，留言区的界面做出来了，但还不能真正保存，以后接真正的评论服务。这个有点难，后面再学。</div>
                     <div class="log-tags">
                         <span class="tag">前端</span>
                         <span class="tag">CSS</span>
@@ -318,7 +376,7 @@
                 <div class="log-card">
                     <div class="log-date">2026.09.05</div>
                     <div class="log-title">学了一些基础的知识</div>
-                    <div class="log-note">从 HTML、CSS 基础开始，跟着DeepSeek做了一个基础的模板，非常丑</div>
+                    <div class="log-note">从 HTML、CSS 基础开始，跟着 DeepSeek 做了一个基础的模板，非常丑。</div>
                     <div class="log-tags">
                         <span class="tag">入门</span>
                         <span class="tag">HTML</span>
@@ -332,7 +390,7 @@
                 <div class="log-card">
                     <div class="log-date">2026.09.01</div>
                     <div class="log-title">决定做一个属于自己的网站</div>
-                    <div class="log-note">怕自己学着学着就没动力了，想把自己的成果可视化一下。</div>
+                    <div class="log-note">一个记录成长、能种田、能玩的小农场，从今天开始。</div>
                     <div class="log-tags">
                         <span class="tag">起点</span>
                         <span class="tag">计划</span>
@@ -349,7 +407,6 @@
     <!-- 回到顶部按钮 -->
     <button id="backToTop" title="回到顶部">↑</button>
 
-    <!-- ========== 回到顶部 JS ========== -->
     <script>
         const backToTop = document.getElementById('backToTop');
 

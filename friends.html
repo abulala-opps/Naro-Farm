@@ -1,37 +1,206 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>我的数字农场</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>友链 · naro 的数字农场</title>
+<link rel="stylesheet" href="style.css">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(160deg, #FDF8F0 0%, #F5EDE0 100%);
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #3E3A36;
+        line-height: 1.8;
+        padding-bottom: 80px;
+    }
+
+    /* ===== 主容器 ===== */
+    .friends-container {
+        max-width: 1000px;
+        margin: 140px auto 0;
+        padding: 0 40px;
+    }
+
+    /* 页面标题 */
+    .page-title {
+        text-align: center;
+        margin-bottom: 12px;
+        animation: fadeInDown 0.8s ease-out both;
+    }
+    .page-title h1 {
+        font-size: 36px;
+        color: #6B8E4E;
+        letter-spacing: 2px;
+    }
+    .page-subtitle {
+        text-align: center;
+        color: #A89880;
+        font-size: 15px;
+        margin-bottom: 60px;
+        animation: fadeInDown 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 友链卡片容器 ===== */
+    .friend-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;   /* 两列 */
+        gap: 24px;
+    }
+
+    /* 单个友链卡片 */
+    .friend-card {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 16px;
+        padding: 20px 24px;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        animation: fadeInUp 0.6s ease-out both;
+    }
+    .friend-card:nth-child(1) { animation-delay: 0.1s; }
+    .friend-card:nth-child(2) { animation-delay: 0.2s; }
+    .friend-card:nth-child(3) { animation-delay: 0.3s; }
+    .friend-card:nth-child(4) { animation-delay: 0.4s; }
+    .friend-card:nth-child(5) { animation-delay: 0.5s; }
+    .friend-card:nth-child(6) { animation-delay: 0.6s; }
+
+    .friend-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(139, 111, 71, 0.18);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    /* 头像 */
+    .friend-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 3px solid rgba(107, 142, 78, 0.15);
+        background: rgba(107, 142, 78, 0.08);
+        transition: border-color 0.3s, transform 0.3s;
+    }
+    .friend-card:hover .friend-avatar {
+        border-color: #E67E22;
+        transform: scale(1.08) rotate(-3deg);
+    }
+
+    /* 文字区 */
+    .friend-info {
+        min-width: 0;   /* 防止溢出 */
+    }
+    .friend-info .friend-name {
+        font-size: 17px;
+        font-weight: bold;
+        color: #6B8E4E;
+        margin-bottom: 4px;
+    }
+    .friend-info .friend-desc {
+        font-size: 13px;
+        color: #A89880;
+        line-height: 1.6;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 底部提示 ===== */
+    .growing-tip {
+        text-align: center;
+        margin-top: 60px;
+        color: #A89880;
+        font-size: 15px;
+    }
+    .growing-tip::before {
+        content: "🌱 ";
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 700px) {
+        .friends-container { margin-top: 120px; padding: 0 24px; }
+        .page-title h1 { font-size: 28px; }
+        .friend-list { grid-template-columns: 1fr; }
+    }
+</style>
 </head>
 <body>
-    <!--头部-->
-    <div class="header">
 
-        <nav class="top-nav">
-            <a href="index.html">首页</a>
-            <a href="about.html">简介</a>
-            <a href="projects.html">项目</a>
-            <a href="blog.html">日志</a>
-            <a href="friends.html" class="active">友链</a>
-        </nav>
+    <!-- 导航栏 -->
+    <nav class="top-nav">
+        <a href="index.html">首页</a>
+        <a href="about.html">简介</a>
+        <a href="projects.html">项目</a>
+        <a href="blog.html">日志</a>
+        <a href="friends.html" class="active">友链</a>
+    </nav>
 
-        <h1>🚜 欢迎来到我的数字农场</h1>
+    <!-- 主内容 -->
+    <div class="friends-container">
 
-        <p>这里正在建设中...</p>    
+        <div class="page-title">
+            <h1>友情链接</h1>
+        </div>
+        <p class="page-subtitle">这里是我的朋友们</p>
 
+        <!-- 友链列表 -->
+        <div class="friend-list">
+
+            <!-- 友链 1 -->
+            <a href="#" class="friend-card" target="_blank" rel="noopener">
+                <img class="friend-avatar" src="images/naro.png" alt="好友头像">
+                <div class="friend-info">
+                    <div class="friend-name">朋友 A</div>
+                    <div class="friend-desc">一句话介绍他/她。</div>
+                </div>
+            </a>
+
+            <!-- 友链 2 -->
+            <a href="#" class="friend-card" target="_blank" rel="noopener">
+                <img class="friend-avatar" src="images/naro.png" alt="好友头像">
+                <div class="friend-info">
+                    <div class="friend-name">朋友 B</div>
+                    <div class="friend-desc">一句话介绍他/她。</div>
+                </div>
+            </a>
+
+            <!-- 友链 3 -->
+            <a href="#" class="friend-card" target="_blank" rel="noopener">
+                <img class="friend-avatar" src="images/naro.png" alt="好友头像">
+                <div class="friend-info">
+                    <div class="friend-name">朋友 C</div>
+                    <div class="friend-desc">一句话介绍他/她。</div>
+                </div>
+            </a>
+
+            <!-- 友链 4 -->
+            <a href="#" class="friend-card" target="_blank" rel="noopener">
+                <img class="friend-avatar" src="images/naro.png" alt="好友头像">
+                <div class="friend-info">
+                    <div class="friend-name">朋友 D</div>
+                    <div class="friend-desc">一句话介绍他/她。</div>
+                </div>
+            </a>
+
+        </div>
+
+        <p class="growing-tip">以后会有更多朋友来农场做客</p>
 
     </div>
 
-
-    <img id="character" src="girl_sit.png" alt="小女孩">
-
-    
-    <!-- 底部 -->
-    <div class="footer">
-    <p>© 2026 我的数字农场 · 正在生长中 🌱</p>
-    </div>
-    
 </body>
 </html>
