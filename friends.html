@@ -172,6 +172,20 @@
             padding: 24px;
         }
     }
+
+    /* ===== 运行时长计时条 ===== */
+    .uptime-bar {
+        text-align: center;
+        margin-top: 24px;
+        color: #A89880;
+        font-size: 14px;
+        padding: 10px 22px;
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+    .uptime-bar span {
+        color: #E67E22;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
@@ -198,7 +212,7 @@
 
     <!-- 友链卡片区 -->
     <div class="friends-container">
-        <div class="friend-list">
+         <div class="friend-list">
 
             <a href="#" class="friend-card" target="_blank" rel="noopener">
                 <img class="friend-avatar" src="images/naro.png" alt="好友头像">
@@ -235,7 +249,42 @@
         </div>
 
         <p class="growing-tip">以后会有更多朋友来农场做客</p>
+
+        <!-- 运行时长计时 -->
+                <div class="uptime-bar">
+                    这个网站已经运行了 <span id="uptime">计算中……</span>
+                </div>
+
+
     </div>
+
+    <script>
+        // ========== 运行时长计时 ==========
+        const SITE_START = new Date('2026-09-01T00:00:00');
+        const uptimeEl = document.getElementById('uptime');
+
+        function updateUptime() {
+            const now = new Date();
+            let diff = Math.floor((now - SITE_START) / 1000);
+
+            if (diff < 0) {
+                uptimeEl.textContent = '刚刚种下';
+                return;
+            }
+
+            const days = Math.floor(diff / 86400);
+            diff %= 86400;
+            const hours = Math.floor(diff / 3600);
+            diff %= 3600;
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+
+            uptimeEl.textContent = `${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`;
+        }
+
+        updateUptime();
+        setInterval(updateUptime, 1000);
+    </script>
 
 </body>
 </html>

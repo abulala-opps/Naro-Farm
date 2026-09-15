@@ -271,6 +271,20 @@
         .article-header h1 { font-size: 26px; }
         .comments, .back-link-wrapper { padding: 0 24px; }
     }
+
+    /* ===== Giscus 评论区容器 ===== */
+    .giscus {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.08);
+        min-height: 200px;
+    }
+    .giscus-frame {
+        width: 100%;
+        border: none;
+    }
+
 </style>
 </head>
 <body>
@@ -351,18 +365,8 @@
     <!-- 评论区 -->
     <div class="comments">
         <h2 class="comments-title">留言</h2>
-
-        <!-- 留言表单 -->
-        <div class="comment-form">
-            <input type="text" id="commentName" placeholder="你的昵称" maxlength="20">
-            <textarea id="commentBody" placeholder="想对 naro 说点什么……" maxlength="300"></textarea>
-            <button id="commentSubmit">提交留言</button>
-        </div>
-
-        <!-- 留言列表 -->
-        <div class="comment-list" id="commentList">
-            <p class="empty-tip">还没有留言，来做第一个吧 🌱</p>
-        </div>
+        <div class="giscus"></div>
+        
     </div>
 
     <!-- 返回 -->
@@ -370,66 +374,21 @@
         <a href="projects.html" class="back-link">← 返回项目列表</a>
     </div>
 
-    <!-- ========== 评论区 JS（假评论区，刷新就丢） ========== -->
-    <script>
-        const nameInput = document.getElementById('commentName');
-        const bodyInput = document.getElementById('commentBody');
-        const submitBtn = document.getElementById('commentSubmit');
-        const list = document.getElementById('commentList');
-
-        // 提交留言
-        submitBtn.addEventListener('click', function() {
-            const name = nameInput.value.trim() || '匿名访客';
-            const body = bodyInput.value.trim();
-
-            if (!body) {
-                alert('留言内容不能为空哦～');
-                return;
-            }
-
-            // 移除"还没有留言"提示
-            const empty = list.querySelector('.empty-tip');
-            if (empty) empty.remove();
-
-            // 创建留言元素
-            const item = document.createElement('div');
-            item.className = 'comment-item';
-
-            const now = new Date();
-            const timeStr = now.getFullYear() + '/' +
-                            (now.getMonth() + 1) + '/' +
-                            now.getDate() + ' ' +
-                            String(now.getHours()).padStart(2, '0') + ':' +
-                            String(now.getMinutes()).padStart(2, '0');
-
-            item.innerHTML = `
-                <div class="comment-head">
-                    <span class="comment-name">${escapeHtml(name)}</span>
-                    <span class="comment-time">${timeStr}</span>
-                </div>
-                <div class="comment-body">${escapeHtml(body)}</div>
-            `;
-
-            // 插入到最上面
-            list.insertBefore(item, list.firstChild);
-
-            // 清空输入框
-            nameInput.value = '';
-            bodyInput.value = '';
-        });
-
-        // 简单的 HTML 转义，防止用户输入标签
-        function escapeHtml(str) {
-            return str.replace(/[&<>"']/g, function(m) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                }[m];
-            });
-        }
+    <!-- Giscus 评论 -->
+    <script src="https://giscus.app/client.js"
+            data-repo="abulala-opps/naro-comments"
+            data-repo-id="R_kgDOUb3atQ"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOUb3atc4DFqIJ"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="top"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
     </script>
 
 </body>
