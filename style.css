@@ -92,3 +92,59 @@ body {
     background: #E67E22;
     box-shadow: 0 2px 8px rgba(230, 126, 34, 0.4);
 }
+
+/* ========== 全站顶部 banner（朴素渐变版） ========== */
+.top-banner {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 朴素渐变：米色 → 淡绿 */
+    background: linear-gradient(160deg,
+        #FDF8F0 0%,
+        #F5EDE0 40%,
+        #E8E8D5 100%);
+
+    /* 可选：加一条淡淡的底线，增加"章节感" */
+    border-bottom: 1px solid rgba(139, 111, 71, 0.08);
+}
+
+/* banner 上的标题（每个页面不同） */
+.banner-title {
+    color: #6B8E4E;
+    font-size: 36px;
+    letter-spacing: 6px;
+    font-weight: bold;
+    text-align: center;
+    animation: fadeInDown 0.8s ease-out both;
+}
+
+/* banner 上的小副标题 */
+.banner-subtitle {
+    color: #A89880;
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-top: 12px;
+    animation: fadeInDown 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.top-banner {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    padding-top: 80px;         /* ← 加这行，避开导航栏 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
