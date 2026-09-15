@@ -9,14 +9,65 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-        overflow: hidden;              /* 不出现滚动条 */
+        overflow-x: hidden;            /* 只禁横向滚动，允许纵向 */
         background: #d9ead3;
     }
 
-    /* 舞台：图片和 canvas 完全重叠 */
+    /* ===== 顶部 banner ===== */
+    .top-banner {
+        position: relative;
+        width: 100%;
+        height: 180px;
+        padding-top: 70px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg,
+            #FDF8F0 0%,
+            #F0EDE0 50%,
+            #E6E6D5 100%);
+        border-bottom: 1px solid rgba(139, 111, 71, 0.08);
+        z-index: 10;
+    }
+
+    .banner-title {
+        color: #6B8E4E;
+        font-size: 30px;
+        letter-spacing: 4px;
+        font-weight: bold;
+        animation: fadeInDown 0.8s ease-out both;
+    }
+
+    .banner-subtitle {
+        color: #A89880;
+        font-size: 14px;
+        letter-spacing: 2px;
+        margin-top: 8px;
+        animation: fadeInDown 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-15px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 舞台：图片和 canvas 完全重叠 ===== */
     #farm {
-        position: fixed;
-        inset: 0;                      /* 等价于 top/right/bottom/left: 0 */
+        position: relative;
+        width: 100%;
+        height: 100vh;                 /* 农场图占满一屏 */
+        overflow: hidden;
+    }
+
+    /* 农场图上的暗色遮罩 */
+    #farm::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.18);   /* 18% 黑色，淡淡的 */
+        pointer-events: none;              /* 不挡点击（重要！） */
+        z-index: 4;                        /* 在背景图之上，文字之下 */
     }
 
     #bg {
@@ -24,10 +75,10 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;             /* 铺满，可能裁掉一点点边缘 */
+        object-fit: cover;
         object-position: center;
         user-select: none;
-        pointer-events: none;          /* 图片本身不接收点击 */
+        pointer-events: none;
         image-rendering: -webkit-optimize-contrast;
     }
 
@@ -37,7 +88,7 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        cursor: crosshair;             /* 鼠标变成十字，提示可点击 */
+        cursor: crosshair;
     }
 
     /* 提示文字 */
@@ -68,14 +119,14 @@
         font-weight: bold;
     }
 
-    /* ===== 欢迎文字（一直显示版） ===== */
+    /* ===== 欢迎文字 ===== */
     #welcome {
         position: absolute;
-        top: 30%;                     /* 偏上，不挡围栏和动物 */
+        top: 32%;
         left: 50%;
-        transform: translateX(-50%);
-        z-index: 20;                  /* 浮在动物上面 */
-        pointer-events: none;         /* 不挡点击 */
+        transform: translate(-50%,-50%);
+        z-index: 20;
+        pointer-events: none;
 
         font-size: 52px;
         font-weight: bold;
@@ -85,15 +136,10 @@
             0 2px 6px rgba(0, 0, 0, 0.25);
         letter-spacing: 6px;
         white-space: nowrap;
+        text-align: center;     
 
-        /* 初始隐藏 */
-        opacity: 0;
-
-        /* 只保留"滚动进入"动画，不做淡出 */
-        animation: welcomeEnter 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
     }
 
-    /* naro 高亮 */
     #welcome .name {
         color: #FFE082;
         font-size: 1.3em;
@@ -102,26 +148,6 @@
         animation: namePulse 2s ease-in-out infinite;
     }
 
-    /* 滚动进入 */
-    @keyframes welcomeEnter {
-        0% {
-            opacity: 0;
-            transform: translate(-50%, 100px) scale(0.7);
-        }
-        55% {
-            opacity: 1;
-            transform: translate(-50%, -12px) scale(1.06);   /* 冲过头一点 */
-        }
-        75% {
-            transform: translate(-50%, 4px) scale(0.98);     /* 回弹 */
-        }
-        100% {
-            opacity: 1;
-            transform: translate(-50%, 0) scale(1);
-        }
-    }
-
-    /* naro 呼吸发光 */
     @keyframes namePulse {
         0%, 100% {
             transform: scale(1);
@@ -133,77 +159,126 @@
         }
     }
 
-/* ===== 樱花容器 ===== */
-#sakura {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;    /* 不挡点击 */
-    overflow: hidden;
-    z-index: 5;              /* 在背景图之上、文字之下 */
-}
+    /* ===== 樱花容器 ===== */
+    #sakura {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 5;
+    }
 
-/* 单片樱花 */
-.sakura-petal {
-    position: absolute;
-    top: -30px;
-    width: 14px;
-    height: 14px;
-    background: radial-gradient(circle at 30% 30%, #FFE4EC, #FFB7C5 60%, #F48FB1);
-    border-radius: 50% 0 50% 50%;      /* 花瓣形状 */
-    opacity: 0.9;
-    animation: sakuraFall linear infinite;
-    will-change: transform;
-}
+    .sakura-petal {
+        position: absolute;
+        top: -30px;
+        width: 14px;
+        height: 14px;
+        background: radial-gradient(circle at 30% 30%, #FFE4EC, #FFB7C5 60%, #F48FB1);
+        border-radius: 50% 0 50% 50%;
+        opacity: 0.9;
+        animation: sakuraFall linear infinite;
+        will-change: transform;
+    }
 
-    /* 飘落轨迹：左右摇摆 + 旋转 */
     @keyframes sakuraFall {
-        0% {
-            transform: translateY(-30px) translateX(0) rotate(0deg);
-            opacity: 0;
-        }
-        10% {
-            opacity: 0.9;
-        }
-        90% {
-            opacity: 0.9;
-        }
-        100% {
-            transform: translateY(105vh) translateX(60px) rotate(360deg);
-            opacity: 0;
-        }
+        0%   { transform: translateY(-30px) translateX(0) rotate(0deg); opacity: 0; }
+        10%  { opacity: 0.9; }
+        90%  { opacity: 0.9; }
+        100% { transform: translateY(105vh) translateX(60px) rotate(360deg); opacity: 0; }
+    }
+
+    /* 下滑提示 */
+    .scroll-tip {
+        margin-top: 24px;
+        font-size: 18px;
+        color: #fff;
+        letter-spacing: 3px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 2.2s forwards;
+        /* 小小的上下浮动，像"呼吸" */
+        animation: fadeInUp 1s ease-out 2.2s forwards,
+                tipFloat 2.5s ease-in-out 3.2s infinite;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes tipFloat {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(6px); }
+    }
+
+    /* 下滑小箭头（可选） */
+    .scroll-tip::after {
+        content: " ↓";
+        display: inline-block;
+        animation: arrowBounce 1.5s ease-in-out infinite;
+    }
+
+    @keyframes arrowBounce {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(4px); }
+    }
+
+    /* 打字文本 */
+    #typingText {
+        display: inline-block;
+    }
+
+    /* 打字光标 */
+    .cursor {
+        display: inline-block;
+        color: #FFE082;
+        font-weight: normal;
+        margin-left: 4px;
+        animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink {
+        50% { opacity: 0; }
     }
 </style>
 </head>
 <body>
 
-<div id="farm">
-    <img id="bg" src="images/farm (2).png" alt="数字农场">
-
-    <nav class="top-nav">
-        <a href="index.html" class="active">首页</a>
-        <a href="about.html" >简介</a>
-        <a href="projects.html" >项目</a>
-        <a href="blog.html">日志</a>
-        <a href="friends.html">友链</a>
-    </nav>
-
-    <div id="counter">🐾 动物：0 只</div>
-    <div id="tip">在围栏内点击，放一只小动物</div>
-
-    <canvas id="canvas"></canvas>
-
-    <div id="welcome">
-        <span class="line">欢迎来到</span>
-        <span class="name">naro</span>
-        <span class="line">的农场</span>
+    <!-- 顶部 banner -->
+    <div class="top-banner">
+        <h1 class="banner-title">naro 的农场</h1>
+        <p class="banner-subtitle">一个正在生长的小世界</p>
     </div>
 
-    <div id="sakura"></div>
-</div>
+    <!-- 农场舞台 -->
+    <div id="farm">
+        <img id="bg" src="images/farm (2).png" alt="数字农场">
+
+        <nav class="top-nav">
+            <a href="index.html" class="active">首页</a>
+            <a href="about.html">简介</a>
+            <a href="projects.html">项目</a>
+            <a href="blog.html">日志</a>
+            <a href="friends.html">友链</a>
+        </nav>
+
+        <div id="counter">🐾 动物：0 只</div>
+        <div id="tip">在围栏内点击，放一只小动物</div>
+
+        <canvas id="canvas"></canvas>
+
+        <div id="welcome">
+            <div class="welcome-line">
+                <span id="typingText"></span>
+                <span class="cursor">|</span>
+            </div>
+            <p class="scroll-tip">下滑屏幕，给农场留下你的小动物吧 ↓</p>
+        </div>
+
+        <div id="sakura"></div>
+    </div>
 
 <script>
     // ========== 1. 动物图片列表 ==========
-    // 这里列出你文件夹里所有动物图的文件名
     const spritePaths = [
         'images/cat.3.png',
         'images/cattle1.png',
@@ -214,7 +289,6 @@
         'images/sheep2.png',
     ];
 
-    // 存放加载好的图片对象
     const animalSprites = [];
 
     // ========== 2. 等所有图片加载完 ==========
@@ -244,28 +318,25 @@
 
     function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
-        W = window.innerWidth;
-        H = window.innerHeight;
+        // 用 farm 容器的尺寸（不是 window）
+        const rect = canvas.getBoundingClientRect();
+        W = rect.width;
+        H = rect.height;
         canvas.width = W * dpr;
         canvas.height = H * dpr;
-        canvas.style.width = W + 'px';
-        canvas.style.height = H + 'px';
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
     // ========== 4. 围栏区域（百分比坐标） ==========
-    // 这四个点是围栏内部的近似多边形，你之后可以微调
-    // 坐标是 0~1 的比例，左上角是 (0,0)，右下角是 (1,1)
     const fencePolygon = [
-        { x: 0.08, y: 0.62 },   // 左上：房子右侧
-        { x: 0.68, y: 0.52 },   // 右上：围栏最右端
-        { x: 0.98, y: 0.98 },   // 右下
-        { x: 0.03, y: 0.98 },   // 左下
+        { x: 0.08, y: 0.62 },
+        { x: 0.68, y: 0.52 },
+        { x: 0.98, y: 0.98 },
+        { x: 0.03, y: 0.98 },
     ];
 
-    // 判断点是否在多边形内（射线法）
     function isInsideFence(nx, ny) {
         const poly = fencePolygon;
         let inside = false;
@@ -284,36 +355,31 @@
 
     // ========== 6. 点击生成动物 ==========
     canvas.addEventListener('click', function(e) {
-        // 图片还没加载完，直接返回
         if (animalSprites.length === 0) return;
 
         const rect = canvas.getBoundingClientRect();
         const screenX = e.clientX - rect.left;
         const screenY = e.clientY - rect.top;
 
-        // 换算成 0~1 的归一化坐标
         const nx = screenX / W;
         const ny = screenY / H;
 
-        // 不在围栏内就忽略
         if (!isInsideFence(nx, ny)) {
             console.log('点击在围栏外，忽略');
             return;
         }
 
-        // 在围栏内，生成一只随机动物
         animals.push({
             x: nx,
             y: ny,
-            vx: (Math.random() - 0.5) * 0.002,   // 归一化速度
+            vx: (Math.random() - 0.5) * 0.002,
             vy: (Math.random() - 0.5) * 0.002,
             scale: 0.7 + Math.random() * 0.5,
             sprite: animalSprites[Math.floor(Math.random() * animalSprites.length)],
-            facing: 1,                            // 1 朝右，-1 朝左
+            facing: 1,
         });
 
         counter.textContent = '🐾 动物：' + animals.length + ' 只';
-        console.log('放了一只动物，当前共', animals.length, '只');
     });
 
     // ========== 7. 更新动物位置 ==========
@@ -322,11 +388,9 @@
             a.x += a.vx;
             a.y += a.vy;
 
-            // 简化版：用矩形范围反弹（后面可以改成精确围栏）
             if (a.x < 0.06 || a.x > 0.95) a.vx *= -1;
             if (a.y < 0.55 || a.y > 0.95) a.vy *= -1;
 
-            // 记录朝向
             if (a.vx < -0.0001) a.facing = -1;
             else if (a.vx > 0.0001) a.facing = 1;
         }
@@ -335,8 +399,7 @@
     // ========== 8. 画动物 ==========
     function drawAnimals() {
         for (const a of animals) {
-            // 统一按高度缩放，宽度按原图比例算
-            const baseH = 80;                          // 动物在屏幕上的基准高度
+            const baseH = 80;
             const h = baseH * a.scale;
             const w = h * (a.sprite.width / a.sprite.height);
             const px = a.x * W;
@@ -365,39 +428,33 @@
 
     // ========== 9. 动画循环 ==========
     function loop() {
-        ctx.clearRect(0, 0, W, H);   // 清空 canvas，露出下面的背景图
+        ctx.clearRect(0, 0, W, H);
         updateAnimals();
         drawAnimals();
         requestAnimationFrame(loop);
     }
 
-    loop();   // 启动动画
+    loop();
 
     // ========== 樱花飘落特效 ==========
     function createSakura() {
         const container = document.getElementById('sakura');
-        const PETAL_COUNT = 25;   // 花瓣数量，太多会卡
+        const PETAL_COUNT = 25;
 
         for (let i = 0; i < PETAL_COUNT; i++) {
             const petal = document.createElement('div');
             petal.className = 'sakura-petal';
 
-            // 随机水平位置
             petal.style.left = Math.random() * 100 + '%';
 
-            // 随机大小
             const size = 8 + Math.random() * 10;
             petal.style.width = size + 'px';
             petal.style.height = size + 'px';
 
-            // 随机飘落时长（越慢越优雅）
-            const duration = 8 + Math.random() * 8;   // 8~16 秒
+            const duration = 8 + Math.random() * 8;
             petal.style.animationDuration = duration + 's';
 
-            // 随机延迟，让花瓣错开出现
             petal.style.animationDelay = Math.random() * 10 + 's';
-
-            // 随机透明度
             petal.style.opacity = 0.5 + Math.random() * 0.5;
 
             container.appendChild(petal);
@@ -405,6 +462,29 @@
     }
 
     createSakura();
+
+    // ========== 打字机效果 ==========
+    const typingText = document.getElementById('typingText');
+    const fullText = '欢迎来到 naro 的农场';
+    let charIndex = 0;
+    const TYPING_SPEED = 120;   // 每个字的间隔毫秒
+
+    function typeNextChar() {
+        if (charIndex < fullText.length) {
+            typingText.textContent += fullText.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeNextChar, TYPING_SPEED);
+        } else {
+            // 打完后隐藏光标
+            const cursor = document.querySelector('.cursor');
+            if (cursor) cursor.style.opacity = '0';
+        }
+    }
+
+    // 页面加载完 0.8 秒后开始打字
+    window.addEventListener('load', () => {
+        setTimeout(typeNextChar, 800);
+    });
 </script>
 </body>
 </html>

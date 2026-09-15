@@ -17,41 +17,58 @@
         padding-bottom: 80px;
     }
 
-    /* ===== 主容器 ===== */
-    .projects-container {
-        max-width: 1000px;         /* 稍微宽一点，容得下两列 */
-        margin: 140px auto 0;
-        padding: 0 40px;
+    /* ===== 顶部朴素 banner（和简介页一致） ===== */
+    .top-banner {
+        position: relative;
+        width: 100%;
+        height: 180px;
+        padding-top: 70px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(160deg,
+            #FDF8F0 0%,
+            #F0EDE0 50%,
+            #E6E6D5 100%);
+        border-bottom: 1px solid rgba(139, 111, 71, 0.08);
     }
 
-    /* 卡片网格容器 */
-    .projects-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;   /* 两列等宽 */
-        gap: 28px;                        /* 卡片之间的间距 */
-    }
-
-    .page-title {
+    .banner-title {
+        color: #6B8E4E;
+        font-size: 30px;
+        letter-spacing: 4px;
+        font-weight: bold;
         text-align: center;
-        margin-bottom: 12px;
         animation: fadeInDown 0.8s ease-out both;
     }
-    .page-title h1 {
-        font-size: 36px;
-        color: #6B8E4E;
-        letter-spacing: 2px;
-    }
-    .page-subtitle {
-        text-align: center;
+
+    .banner-subtitle {
         color: #A89880;
-        font-size: 15px;
-        margin-bottom: 50px;
+        font-size: 14px;
+        letter-spacing: 2px;
+        text-align: center;
+        margin-top: 8px;
         animation: fadeInDown 0.8s ease-out 0.2s both;
     }
 
     @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-20px); }
+        from { opacity: 0; transform: translateY(-15px); }
         to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 主容器 ===== */
+    .projects-container {
+        max-width: 1000px;
+        margin: 60px auto 0;
+        padding: 0 40px;
+    }
+
+    /* 卡片网格 */
+    .projects-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
     }
 
     /* ===== 项目卡片 ===== */
@@ -63,7 +80,7 @@
         overflow: hidden;
         box-shadow: 0 4px 20px rgba(139, 111, 71, 0.1);
         transition: transform 0.4s ease, box-shadow 0.4s ease;
-        animation: fadeInUp 0.8s ease-out 0.4s both;
+        animation: fadeInUp 0.8s ease-out 0.3s both;
     }
 
     .project-card:hover {
@@ -74,7 +91,7 @@
     /* 封面图 */
     .project-cover {
         width: 100%;
-        height: 160px;              /* 从 220px 降到 160px */
+        height: 160px;
         overflow: hidden;
         background: linear-gradient(160deg, #F5EDE0 0%, #E8DDC8 100%);
         display: flex;
@@ -84,7 +101,7 @@
     }
 
     .project-cover img {
-        width: 90px;                /* 从 140px 降到 90px */
+        width: 90px;
         height: 90px;
         object-fit: cover;
         border-radius: 20px;
@@ -95,22 +112,6 @@
     .project-card:hover .project-cover img {
         filter: grayscale(0);
         transform: scale(1.1);
-    }
-    .project-card:hover .project-cover img {
-        filter: grayscale(0);
-        transform: scale(1.08);
-    }
-    .project-cover img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        /* 灰色滤镜：悬停时恢复彩色 */
-        filter: grayscale(1);
-        transition: filter 0.6s ease, transform 0.6s ease;
-    }
-    .project-card:hover .project-cover img {
-        filter: grayscale(0);
-        transform: scale(1.05);
     }
 
     /* 卡片内容 */
@@ -146,10 +147,36 @@
         background: rgba(255, 193, 7, 0.15);
         color: #B8860B;
     }
+    .status-coming {
+        background: rgba(107, 142, 78, 0.15);
+        color: #6B8E4E;
+    }
 
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(30px); }
         to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 占位卡片 ===== */
+    .project-card-placeholder {
+        cursor: default;
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+        opacity: 0.85;
+    }
+    .project-card-placeholder:hover {
+        transform: none;
+        box-shadow: 0 4px 20px rgba(139, 111, 71, 0.1);
+    }
+
+    .placeholder-icon {
+        font-size: 48px;
+        filter: grayscale(1);
+        opacity: 0.7;
+        transition: filter 0.6s ease, opacity 0.6s ease;
+    }
+    .project-card-placeholder:hover .placeholder-icon {
+        filter: grayscale(0);
+        opacity: 1;
     }
 
     /* ===== 底部说明 ===== */
@@ -158,7 +185,7 @@
         margin-top: 60px;
         color: #A89880;
         font-size: 15px;
-        animation: fadeInUp 0.8s ease-out 0.6s both;
+        animation: fadeInUp 0.8s ease-out 0.8s both;
     }
     .growing-tip::before {
         content: "🌱 ";
@@ -166,46 +193,10 @@
 
     /* ===== 响应式 ===== */
     @media (max-width: 900px) {
-        .projects-container { margin-top: 120px; padding: 0 24px; }
-        .project-cover { height: 200px; }
-        .page-title h1 { font-size: 28px; }
-    }
-
-    /* ===== 占位卡片 ===== */
-    .project-card-placeholder {
-        cursor: default;               /* 鼠标不变手型 */
-        animation: fadeInUp 0.8s ease-out 0.6s both;
-        opacity: 0.85;
-    }
-
-    .project-card-placeholder:hover {
-        transform: none;               /* 不悬浮 */
-        box-shadow: 0 4px 20px rgba(139, 111, 71, 0.1);
-    }
-
-    /* 占位图标 */
-    .placeholder-icon {
-        font-size: 48px;
-        filter: grayscale(1);
-        opacity: 0.7;
-        transition: filter 0.6s ease, opacity 0.6s ease;
-    }
-
-    .project-card-placeholder:hover .placeholder-icon {
-        filter: grayscale(0);
-        opacity: 1;
-    }
-
-    /* 计划中徽章 */
-    .status-coming {
-        background: rgba(107, 142, 78, 0.15);
-        color: #6B8E4E;
-    }
-
-    @media (max-width: 700px) {
-        .projects-grid {
-            grid-template-columns: 1fr;   /* 手机上一列 */
-        }
+        .top-banner { height: 150px; }
+        .banner-title { font-size: 24px; }
+        .projects-container { margin-top: 40px; padding: 0 24px; }
+        .projects-grid { grid-template-columns: 1fr; }
     }
 </style>
 </head>
@@ -220,26 +211,26 @@
         <a href="friends.html">友链</a>
     </nav>
 
+    <!-- 顶部 banner -->
+    <div class="top-banner">
+        <h1 class="banner-title">我的项目</h1>
+        <p class="banner-subtitle">这里记录了我做过的每一个东西</p>
+    </div>
+
     <!-- 主内容 -->
     <div class="projects-container">
 
-        <div class="page-title">
-            <h1>我的项目</h1>
-        </div>
-        <p class="page-subtitle">这里记录了我做过的每一个东西</p>
-
         <div class="projects-grid">
+
             <!-- 项目卡片：思绪时刻 -->
             <a href="projects_app.html" class="project-card">
                 <div class="project-cover">
-                    <img src="images/app_picture.png" alt="思绪时间">
+                    <img src="images/app_picture.png" alt="时间管理 app">
                 </div>
                 <div class="project-info">
-                    <h3>时间管理类app开发</h3>
+                    <h3>时间管理类 app 开发</h3>
                     <p class="project-type">时间管理类 App</p>
-                    <p class="project-desc">
-                        一个规划和记录时间的工具。
-                    </p>
+                    <p class="project-desc">一个规划和记录时间的工具。</p>
                     <span class="status-badge status-paused">搁置中</span>
                 </div>
             </a>
@@ -252,14 +243,13 @@
                 <div class="project-info">
                     <h3>敬请期待</h3>
                     <p class="project-type">More Projects</p>
-                    <p class="project-desc">
-                        这里会慢慢长出更多东西。
-                    </p>
+                    <p class="project-desc">这里会慢慢长出更多东西。</p>
                     <span class="status-badge status-coming">计划中</span>
                 </div>
             </div>
+
         </div>
-        <!-- 底部说明 -->
+
         <p class="growing-tip">这个页面还在生长中，未来会有更多项目</p>
 
     </div>
