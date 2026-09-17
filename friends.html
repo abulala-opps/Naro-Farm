@@ -186,6 +186,20 @@
         color: #E67E22;
         font-weight: bold;
     }
+
+    /* ===== Giscus 评论区容器 ===== */
+    .giscus {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 16px rgba(139, 111, 71, 0.08);
+        min-height: 200px;
+    }
+    .giscus-frame {
+        width: 100%;
+        border: none;
+    }
+
 </style>
 </head>
 <body>
@@ -248,13 +262,20 @@
 
         </div>
 
+        <!-- 评论区 -->
+        <div class="comments" style="margin-top:48px;">
+            <h3 style="font-size:18px; color:#6B8E4E; margin-bottom:20px; text-align:center;">
+                💬 留言 / 申请友链
+            </h3>
+             <div class="giscus"></div>
+        </div>
+
         <p class="growing-tip">以后会有更多朋友来农场做客</p>
 
         <!-- 运行时长计时 -->
                 <div class="uptime-bar">
                     这个网站已经运行了 <span id="uptime">计算中……</span>
                 </div>
-
 
     </div>
 
@@ -284,6 +305,23 @@
 
         updateUptime();
         setInterval(updateUptime, 1000);
+    </script>
+
+    <!-- Giscus 评论 -->
+    <script src="https://giscus.app/client.js"
+            data-repo="abulala-opps/naro-comments"
+            data-repo-id="R_kgDOUb3atQ"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOUb3atc4DFqIJ"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="top"
+            data-theme="preferred_color_scheme"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
     </script>
 
 </body>
